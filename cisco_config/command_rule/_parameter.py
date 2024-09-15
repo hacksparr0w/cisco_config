@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import typing
 
 from pydantic import BaseModel
@@ -15,4 +17,4 @@ class Union(BaseModel):
     members: list[CommandParameter]
 
 
-type CommandParameter = Union[]
+type CommandParameter = typing.Union

@@ -10,6 +10,7 @@ __all__ = (
     "Comment",
     "Eol",
     "Token",
+    "TokenReader",
     "Word",
 
     "token_reader"
@@ -89,7 +90,10 @@ type _TokenReaderState = Union[
 ]
 
 
-def token_reader(stream: TextIOBase) -> Generator[Token, None, None]:
+type TokenReader = Generator[Token, None, None]
+
+
+def token_reader(stream: TextIOBase) -> TokenReader:
     state = _SeekingState()
 
     while True:

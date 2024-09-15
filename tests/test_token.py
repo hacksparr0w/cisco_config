@@ -88,5 +88,5 @@ from cisco_config.token import Eol, Comment, Word, token_reader
         )
     ]
 )
-def test(input, expected):
+def test_token_reader(input, expected):
     assert tuple(token_reader(StringIO(dedent(input)))) == expected
