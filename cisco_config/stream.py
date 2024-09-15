@@ -1,14 +1,16 @@
-from typing import Iterable, Self
+from typing import Iterable, Iterator, Self
 
 
 __all__ = (
-    "Replayable",
+    "ReplayableIterator",
+
+    "replayable"
 )
 
 
-class Replayable[T]:
-    def __init__(self, stream: Iterable[T]) -> None:
-        self._stream = stream
+class ReplayableIterator[T]:
+    def __init__(self, iterator: Iterator[T]) -> None:
+        self._iterator = iterator
 
         self._is_recording = False
         self._replay_buffer = []
@@ -29,8 +31,8 @@ class Replayable[T]:
                     self._replay_buffer.clear()
 
             return value
-        
-        value = next(self._stream)
+
+        value = next(self._iterator)
 
         if self._is_recording:
             self._replay_buffer.append(value)
@@ -56,3 +58,7 @@ class Replayable[T]:
 
     def stop_recording(self) -> None:
         self._is_recording = False
+
+
+def replayable[T](iterable: Iterable[T]) -> ReplayableIterator[T]:
+    return ReplayableIterator(iter(iterable))
