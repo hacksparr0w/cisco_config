@@ -1,6 +1,6 @@
-from . import access_list
+from .access_list import *
 
 
-commands = (
-    access_list.commands
+__all__ = (
+    access_list.__all__
 )

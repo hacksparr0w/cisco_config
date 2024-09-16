@@ -2,8 +2,15 @@ from typing import Literal, Optional
 
 from pydantic import BaseModel
 
-from ....command import Parameter, Specification
-from ..base import Text
+from ....command import Command
+from ..common import Text
+
+
+__all__ = (
+    "AccessListRemarkCommand",
+    "Line",
+    "Remark"
+)
 
 
 class Line(BaseModel):
@@ -16,13 +23,8 @@ class Remark(BaseModel):
     text: Text
 
 
-commands = (
-    Specification(
-        name="access-list",
-        parameters=[
-            Parameter(name="id", type=str),
-            Parameter(name="line", type=Optional[Line]),
-            Parameter(name="remark", type=Remark)
-        ]
-    ),
-)
+class AccessListRemarkCommand(Command):
+    name: Literal["access-list"]
+    id: str
+    line: Optional[Line]
+    remark: Remark
