@@ -1,10 +1,9 @@
-from __future__ import annotations
+from typing import Self
 
 from pydantic import BaseModel
 
-from ...deserialize import DeserializationError
-from ...stream import ReplayableIterator
-from ...token import Eol, Token, Word
+from ...deserialize import Next, Record, Replay, ProgressiveDeserializer
+from ...token import Eol, Word
 
 
 __all__ = (
@@ -17,14 +16,11 @@ class Data(BaseModel):
     content: bytes
 
     @classmethod
-    def __deserialize__(cls: Data, stream: ReplayableIterator[Token]) -> Data:
+    def deserialize(cls) -> ProgressiveDeserializer[Self]:
         content = b""
 
         while True:
-            try:
-                token = next(stream)
-            except StopIteration:
-                raise DeserializationError
+            token = yield Next()
 
             if isinstance(token, Word):
                 if token.value == "end":
@@ -32,31 +28,33 @@ class Data(BaseModel):
 
                 content += bytes.fromhex(token.value)
             elif not isinstance(token, Eol):
-                raise DeserializationError
+                raise ValueError
 
 
 class Text(BaseModel):
     content: str
 
     @classmethod
-    def __deserialize__(cls: Text, stream: ReplayableIterator[Token]) -> Text:
+    def deserialize(cls) -> ProgressiveDeserializer[Self]:
         content = ""
 
         while True:
-            record = stream.start_recording()
+            index = yield Record()
 
             try:
-                token = next(stream)
-            except StopIteration:
+                token = yield Next()
+            except EOFError:
                 token = None
 
-            if not isinstance(token, Word):
+            if isinstance(token, Eol) or token is None:
                 if not content:
-                    raise DeserializationError
+                    raise ValueError
 
-                if stream.has_recorded(record):
-                    stream.replay(record)
+                yield Replay(index)
 
                 return cls(content=content)
+            elif isinstance(token, Word):
+                content += token.value
+                continue
 
-            content += token.value
+            raise ValueError

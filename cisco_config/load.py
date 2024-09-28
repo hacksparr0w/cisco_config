@@ -7,6 +7,12 @@ from .stream import ReplayableIterator
 from .token import Token, TokenReader, token_reader
 
 
+__all__ = (
+    "load",
+    "loads"
+)
+
+
 def _consume(
     deserializer: ProgressiveDeserializer[tuple[Optional[Command], bool]],
     stream: ReplayableIterator[Token]
@@ -16,16 +22,19 @@ def _consume(
             message = next(deserializer)
 
             if isinstance(message, Cut):
-                deserializer.send(stream.cut())
+                stream.cut()
             elif isinstance(message, Next):
                 try:
                     deserializer.send(next(stream))
                 except StopIteration:
                     deserializer.throw(EOFError)
             elif isinstance(message, Record):
-                deserializer.send(stream.record())
+                stream.record()
             elif isinstance(message, Replay):
-                deserializer.send(stream.replay(message.index))
+                index = message.index
+
+                if stream.has_recorded(index):
+                    stream.replay(index)
     except StopIteration as error:
         return error.value
 
@@ -39,7 +48,7 @@ def load(hints: tuple[Command, ...], reader: TokenReader) -> list[Command]:
 
         if command is not None:
             result.append(command)
-        
+
         if eof:
             break
 

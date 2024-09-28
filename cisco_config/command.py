@@ -16,6 +16,13 @@ from .deserialize import (
 from .token import Eol, Word
 
 
+__all__ = (
+    "Command",
+
+    "deserialize_command"
+)
+
+
 class Command(BaseModel):
     @staticmethod
     def deserialize(cls) -> ProgressiveDeserializer[Self]:
@@ -50,7 +57,7 @@ def deserialize_command(
 
     try:
         result = yield from deserialize(Union[hints])
-    except (ValueError, EOFError):
+    except ValueError:
         if not parent:
             raise
 
