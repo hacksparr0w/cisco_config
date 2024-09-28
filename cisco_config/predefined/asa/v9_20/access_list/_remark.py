@@ -1,20 +1,13 @@
 from typing import Literal, Optional
 
-from pydantic import BaseModel
-
-from ..common import Text
-from ....command import Command
+from .....command import Command
+from ...common import Text
+from ._base import Line
 
 
 __all__ = (
     "AccessListRemarkCommand",
-    "Line"
 )
-
-
-class Line(BaseModel):
-    name: Literal["line"] = "line"
-    number: int
 
 
 class AccessListRemarkCommand(Command):

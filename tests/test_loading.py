@@ -7,6 +7,10 @@ from cisco_config.predefined.asa.common import Text
 from cisco_config.predefined.asa.v9_20 import (
     AccessListRemarkCommand,
     Line,
+    Log,
+    LogSpecification,
+    ObjectGroupReference,
+    PortfulExtendedAccessListCommand,
 
     hints
 )
@@ -38,6 +42,20 @@ from cisco_config.predefined.asa.v9_20 import (
                     id="outside_access_in",
                     line=Line(number=5),
                     remark=Text(content="This is another remark")
+                )
+            ]
+        ),
+        (
+            "access-list MY_ACL extended permit TCP object-group GRP_NET1691403080 object-group GRP_NET1691403081 object-group GRP_SVCTCP1652862712 log",
+            [
+                PortfulExtendedAccessListCommand(
+                    id="MY_ACL",
+                    action="permit",
+                    protocol="TCP",
+                    source=ObjectGroupReference(id="GRP_NET1691403080"),
+                    source_port=ObjectGroupReference(id="GRP_NET1691403081"),
+                    destination=ObjectGroupReference(id="GRP_SVCTCP1652862712"),
+                    log=Log()
                 )
             ]
         )

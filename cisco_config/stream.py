@@ -54,7 +54,8 @@ class ReplayableIterator[T]:
     def record(self) -> int:
         self._is_recording = True
 
-        return len(self._replay_buffer)
+        return self._replay_index if self._replay_index is not None \
+            else len(self._replay_buffer)
 
     def cut(self) -> None:
         self._is_recording = False

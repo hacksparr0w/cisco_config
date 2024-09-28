@@ -2,7 +2,9 @@ from .access_list import *
 
 
 hints = (
-    AccessListRemarkCommand
+    AccessListRemarkCommand,
+    PortfulExtendedAccessListCommand,
+    PortlessExtendedAccessListCommand
 )
 
 
