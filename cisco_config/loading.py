@@ -32,9 +32,11 @@ def _consume(
                 request = deserializer.send(stream.cut())
             elif isinstance(request, Next):
                 try:
-                    request = deserializer.send(next(stream))
+                    token = next(stream)
                 except StopIteration:
                     request = deserializer.throw(EOFError)
+                else:
+                    request = deserializer.send(token)
             elif isinstance(request, Record):
                 request = deserializer.send(stream.record())
             elif isinstance(request, Replay):

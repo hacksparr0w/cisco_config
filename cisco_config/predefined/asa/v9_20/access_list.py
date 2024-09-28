@@ -13,7 +13,7 @@ __all__ = (
 
 
 class Line(BaseModel):
-    name: Literal["line"]
+    name: Literal["line"] = "line"
     number: int
 
 

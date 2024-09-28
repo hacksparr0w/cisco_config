@@ -2,6 +2,7 @@ from typing import (
     Any,
     Generator,
     Literal,
+    Optional,
     Protocol,
     Self,
     Union,
@@ -129,15 +130,20 @@ def deserialize_object(
 
 
 def deserialize_base_model(
-    hint: type[BaseModel]
+    hint: type[BaseModel],
+    fields: Optional[dict[str, type]] = None,
+    defaults: dict[str, Any] = {}
 ) -> ProgressiveDeserializer[BaseModel]:
-    fields = {
-        name: field.annotation for name, field in hint.model_fields.items()
-    }
+    if not fields:
+        fields = {
+            name: field.annotation
+            for name, field in hint.model_fields.items()
+        }
 
     data = yield from deserialize_object(fields)
+    result = hint.model_validate({**defaults, **data})
 
-    return hint.model_validate(data)
+    return result
 
 
 def deserialize(hint: type) -> ProgressiveDeserializer[Any]:
