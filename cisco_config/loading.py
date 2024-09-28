@@ -2,7 +2,7 @@ from io import StringIO
 from typing import Optional
 
 from .command import Command, deserialize_command
-from .deserialize import Cut, Next, ProgressiveDeserializer, Record, Replay
+from .deserialization import Cut, Next, ProgressiveDeserializer, Record, Replay
 from .stream import ReplayableIterator
 from .token import Token, TokenReader, token_reader
 
@@ -18,23 +18,27 @@ def _consume(
     stream: ReplayableIterator[Token]
 ) -> tuple[Optional[Command], bool]:
     try:
-        while True:
-            message = next(deserializer)
+        request = next(deserializer)
 
-            if isinstance(message, Cut):
-                stream.cut()
-            elif isinstance(message, Next):
+        while True:
+            if isinstance(request, Cut):
+                request = deserializer.send(stream.cut())
+            elif isinstance(request, Next):
                 try:
-                    deserializer.send(next(stream))
+                    request = deserializer.send(next(stream))
                 except StopIteration:
-                    deserializer.throw(EOFError)
-            elif isinstance(message, Record):
-                stream.record()
-            elif isinstance(message, Replay):
-                index = message.index
+                    request = deserializer.throw(EOFError)
+            elif isinstance(request, Record):
+                request = deserializer.send(stream.record())
+            elif isinstance(request, Replay):
+                index = request.index
 
                 if stream.has_recorded(index):
                     stream.replay(index)
+
+                request = deserializer.send(None)
+            else:
+                raise TypeError
     except StopIteration as error:
         return error.value
 

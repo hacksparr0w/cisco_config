@@ -2,14 +2,13 @@ from typing import Literal, Optional
 
 from pydantic import BaseModel
 
-from ....command import Command
 from ..common import Text
+from ....command import Command
 
 
 __all__ = (
     "AccessListRemarkCommand",
-    "Line",
-    "Remark"
+    "Line"
 )
 
 

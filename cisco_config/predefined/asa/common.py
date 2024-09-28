@@ -2,7 +2,7 @@ from typing import Self
 
 from pydantic import BaseModel
 
-from ...deserialize import Next, Record, Replay, ProgressiveDeserializer
+from ...deserialization import Next, Record, Replay, ProgressiveDeserializer
 from ...token import Eol, Word
 
 
@@ -50,7 +50,7 @@ class Text(BaseModel):
                 if not content:
                     raise ValueError
 
-                yield Replay(index)
+                yield Replay(index=index)
 
                 return cls(content=content)
             elif isinstance(token, Word):

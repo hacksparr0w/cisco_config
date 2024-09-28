@@ -2,7 +2,7 @@ from typing import Optional, Self, Union
 
 from pydantic import BaseModel
 
-from .deserialize import (
+from .deserialization import (
     Cut,
     Next,
     ProgressiveDeserializer,
@@ -24,7 +24,7 @@ __all__ = (
 
 
 class Command(BaseModel):
-    @staticmethod
+    @classmethod
     def deserialize(cls) -> ProgressiveDeserializer[Self]:
         return deserialize_base_model(cls)
 
@@ -43,7 +43,7 @@ def _seek() -> ProgressiveDeserializer[None]:
         break
 
     yield Cut()
-    yield Replay(index)
+    yield Replay(index=index)
 
 
 def deserialize_command(
