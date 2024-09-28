@@ -1,75 +1,64 @@
-from __future__ import annotations
-
-from typing import (
-    Literal,
-    Self,
-    get_origin as get_generic_origin,
-    get_args as get_generic_args
-)
+from typing import Optional, Self, Union
 
 from pydantic import BaseModel
 
-from .deserialize import deserialize_model
-from .stream import ReplayableIterator
-from .token import Token
+from .deserialize import (
+    Cut,
+    Next,
+    ProgressiveDeserializer,
+    Record,
+    Replay,
 
-
-__all__ = (
-    "Command",
-    "CommandClassValidationError",
-    "Container",
-    "MissingCommandNameFieldError",
-    "InvalidCommandNameFieldError"
+    deserialize,
+    deserialize_base_model
 )
 
-
-class CommandClassValidationError(TypeError):
-    pass
-
-
-class MissingCommandNameFieldError(CommandClassValidationError):
-    pass
-
-
-class InvalidCommandNameFieldError(CommandClassValidationError):
-    pass
-
-
-def _get_command_name(cls: type[Command]) -> str:
-    return get_generic_args(cls.__fields__["name"].annotation)[0]
-
-
-def _validate_command_subclass(cls: type[Command]) -> None:
-    field = cls.__fields__.get("name")
-
-    if not field:
-        raise MissingCommandNameFieldError
-
-    annotation = field.annotation
-
-    if not get_generic_origin(annotation) is Literal:
-        raise InvalidCommandNameFieldError
-
-    args = get_generic_args(field.annotation)
-
-    if len(args) != 1:
-        raise InvalidCommandNameFieldError
+from .token import Eol, Word
 
 
 class Command(BaseModel):
-    def __init_subclass__(cls, **kwargs) -> None:
-        super().__init_subclass__(**kwargs)
-        _validate_command_subclass(cls)
-
-    @classmethod
-    def get_name(cls) -> str:
-        return _get_command_name(cls)
-
-    @classmethod
-    def __deserialize__(cls, stream: ReplayableIterator[Token]) -> Self:
-        return deserialize_model(cls, stream)
+    @staticmethod
+    def deserialize(cls) -> ProgressiveDeserializer[Self]:
+        return deserialize_base_model(cls)
 
 
-class Container(BaseModel):
-    parent: Command
-    children: list[Container]
+def _seek() -> ProgressiveDeserializer[None]:
+    index = yield Record()
+
+    while True:
+        token = yield Next()
+
+        if not isinstance(token, Word):
+            yield Cut()
+            index = yield Record()
+            continue
+
+        break
+
+    yield Cut()
+    yield Replay(index)
+
+
+def deserialize_command(
+    hints: tuple[type[Command], ...],
+    parent: Optional[Command] = None
+) -> ProgressiveDeserializer[Command]:
+    yield from _seek()
+
+    try:
+        result = yield from deserialize(Union[hints])
+    except ValueError:
+        if not parent:
+            raise
+
+        raise NotImplementedError
+
+    try:
+        token = yield Next()
+
+        if not isinstance(token, Eol):
+            raise RuntimeError
+    except EOFError:
+        pass
+
+    return result

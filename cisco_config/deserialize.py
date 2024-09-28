@@ -1,118 +1,159 @@
 from typing import (
     Any,
+    Generator,
     Literal,
     Protocol,
     Self,
     Union,
-
-    get_origin as get_generic_origin,
     get_args as get_generic_args,
+    get_origin as get_generic_origin,
     runtime_checkable
 )
 
 from pydantic import BaseModel
 
-from .stream import ReplayableIterator
-from .token import Token, Word
+from .token import Word
 
 
 __all__ = (
+    "Cut",
     "Deserializable",
-    "DeserializationError"
+    "Next",
+    "ProgressiveDeserializerMessage",
+    "ProgressiveDeserializer",
+    "Record",
+    "Replay",
+
+    "deserialize",
+    "deserialize_base_model",
+    "deserialize_float",
+    "deserialize_integer",
+    "deserialize_literal",
+    "deserialize_none",
+    "deserialize_object",
+    "deserialize_string",
+    "deserialize_union"
 )
+
+
+class Cut(BaseModel):
+    pass
+
+
+class Next(BaseModel):
+    pass
+
+
+class Record(BaseModel):
+    pass
+
+
+class Replay(BaseModel):
+    index: int
+
+
+type ProgressiveDeserializerMessage = Union[Next, Record, Replay]
+type ProgressiveDeserializer[T] = Generator[None, Any, T]
 
 
 @runtime_checkable
 class Deserializable(Protocol):
     @classmethod
-    def __deserialize__(cls, stream: ReplayableIterator[Token]) -> Self:
+    def deserialize(cls) -> ProgressiveDeserializer[Self]:
         ...
 
 
-class DeserializationError(Exception):
-    pass
-
-
-def deserialize_deserializable(
-    stream: ReplayableIterator[Token],
-    deserializable: type[Deserializable]
-) -> Any:
-    return deserializable.__deserialize__(stream)
-
-
-def deserialize_string(stream: ReplayableIterator[Token]) -> str:
-    token = next(stream)
+def deserialize_string() -> ProgressiveDeserializer[str]:
+    token = yield Next()
 
     if not isinstance(token, Word):
-        raise DeserializationError
+        raise ValueError
 
     return token.value
 
 
-def deserialize_integer(stream: ReplayableIterator[Token]) -> int:
-    value = deserialize_string(stream)
+def deserialize_literal(
+    members: tuple[str, ...]
+) -> ProgressiveDeserializer[str]:
+    result = yield from deserialize_string()
 
-    try:
-        return int(value)
-    except ValueError:
-        raise DeserializationError
+    if result not in members:
+        raise ValueError
 
-
-def deserialize_literal(stream: ReplayableIterator[Token], hint: Any) -> str:
-    value = get_generic_args(hint)[0]
-    string = deserialize_string(stream)
-
-    if string != value:
-        raise DeserializationError
-
-    return string
+    return result
 
 
-def deserialize_model(
-    stream: ReplayableIterator[Token],
-    model: type[BaseModel]
-) -> Any:
-    properties = {}
+def deserialize_integer() -> ProgressiveDeserializer[int]:
+    result = yield from deserialize_string()
 
-    for key, field in model.__fields__.items():
-        value = deserialize(stream, field.annotation)
-
-        properties[key] = value
-
-    return model.model_validate(properties)
+    return int(result)
 
 
-def deserialize_none(stream: ReplayableIterator[Token]) -> None:
+def deserialize_float() -> ProgressiveDeserializer[float]:
+    result = yield from deserialize_string()
+
+    return float(result)
+
+
+def deserialize_none() -> ProgressiveDeserializer[None]:
+    yield from ()
     return None
 
 
-def deserialize_union(stream: ReplayableIterator[Token], hint: Any) -> Any:
-    for argument in get_generic_args(hint):
-        record = stream.start_recording()
+def deserialize_union(
+    members: tuple[type, ...]
+) -> ProgressiveDeserializer[Any]:
+    index = yield Record()
+    error = None
 
+    for member in members:
         try:
-            return deserialize(stream, argument)
-        except DeserializationError:
-            if stream.has_recorded(record):
-                stream.replay(record)
+            yield from deserialize(member)
+        except ValueError as error:
+            yield Replay(index=index)
 
-    raise DeserializationError
+    raise ValueError from error
 
 
-def deserialize(stream: ReplayableIterator[Token], hint: Any) -> Any:
-    if hint is type(None):
-        return deserialize_none(stream)
-    elif hint is str:
-        return deserialize_string(stream)
-    elif hint is int:
-        return deserialize_integer(stream)
-    elif isinstance(hint, Deserializable):
-        return deserialize_deserializable(stream, hint)
+def deserialize_object(
+    fields: dict[str, type]
+) -> ProgressiveDeserializer[dict]:
+    result = {}
+
+    for name, hint in fields.items():
+        result[name] = yield from deserialize(hint)
+
+    return result
+
+
+def deserialize_base_model(
+    hint: type[BaseModel]
+) -> ProgressiveDeserializer[BaseModel]:
+    fields = {
+        name: field.annotation for name, field in hint.__fields__.items()
+    }
+
+    data = yield from deserialize_object(fields)
+
+    return hint(**data)
+
+
+def deserialize(hint: type) -> ProgressiveDeserializer[Any]:
+    if issubclass(hint, Deserializable):
+        yield from hint.deserialize()
     elif issubclass(hint, BaseModel):
-        return deserialize_model(stream, hint)
+        yield from deserialize_base_model(hint)
+    elif hint is str:
+        yield from deserialize_string()
+    elif hint is int:
+        yield from deserialize_integer()
+    elif hint is float:
+        yield from deserialize_float()
+    elif hint is type(None):
+        yield from deserialize_none()
     elif get_generic_origin(hint) is Literal:
-        return deserialize_literal(stream, hint)
+        yield from deserialize_literal(get_generic_args(hint))
     elif get_generic_origin(hint) is Union:
-        return deserialize_union(stream, hint)
+        yield from deserialize_union(get_generic_args(hint))
     else:
-        raise NotImplementedError
+        raise TypeError
