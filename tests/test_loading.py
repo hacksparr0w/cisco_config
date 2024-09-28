@@ -5,7 +5,7 @@ from cisco_config.predefined.asa.common import Text
 from cisco_config.predefined.asa.v9_20 import (
     AccessListRemarkCommand,
 
-    command_hints
+    hints
 )
 
 
@@ -16,10 +16,7 @@ from cisco_config.predefined.asa.v9_20 import (
             "access-list outside_access_in remark This is a remark",
             [
                 AccessListRemarkCommand(
-                    name="access-list",
                     id="outside_access_in",
-                    line=None,
-                    type="remark",
                     remark=Text(content="This is a remark")
                 )
             ]
@@ -27,4 +24,4 @@ from cisco_config.predefined.asa.v9_20 import (
     ]
 )
 def test(data: str, expected: list[Command]):
-    assert loads(command_hints, data) == expected
+    assert loads(hints, data) == expected

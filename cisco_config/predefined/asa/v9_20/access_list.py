@@ -18,8 +18,8 @@ class Line(BaseModel):
 
 
 class AccessListRemarkCommand(Command):
-    name: Literal["access-list"]
+    name: Literal["access-list"] = "access-list"
     id: str
-    line: Optional[Line]
-    type: Literal["remark"]
+    line: Optional[Line] = None
+    type: Literal["remark"] = "remark"
     remark: Text
