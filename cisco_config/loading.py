@@ -2,7 +2,14 @@ from io import StringIO
 from typing import Optional
 
 from .command import Command, deserialize_command
-from .deserialization import Cut, Next, ProgressiveDeserializer, Record, Replay
+from .deserialization import (
+    Cut,
+    Next,
+    ProgressiveDeserializer,
+    Record,
+    Replay
+)
+
 from .stream import ReplayableIterator
 from .token import Token, TokenReader, token_reader
 

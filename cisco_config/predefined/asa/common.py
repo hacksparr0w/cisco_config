@@ -54,7 +54,11 @@ class Text(BaseModel):
 
                 return cls(content=content)
             elif isinstance(token, Word):
+                if content:
+                    content += " "
+
                 content += token.value
+
                 continue
 
             raise ValueError
