@@ -109,7 +109,7 @@ def deserialize_union(
     for member in members:
         try:
             yield from deserialize(member)
-        except ValueError as error:
+        except (ValueError, EOFError) as error:
             yield Replay(index=index)
 
     raise ValueError from error

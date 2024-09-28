@@ -42,12 +42,15 @@ def _seek() -> ProgressiveDeserializer[None]:
 def deserialize_command(
     hints: tuple[type[Command], ...],
     parent: Optional[Command] = None
-) -> ProgressiveDeserializer[Command]:
-    yield from _seek()
+) -> ProgressiveDeserializer[tuple[Optional[Command], bool]]:
+    try:
+        yield from _seek()
+    except EOFError:
+        return None, True
 
     try:
         result = yield from deserialize(Union[hints])
-    except ValueError:
+    except (ValueError, EOFError):
         if not parent:
             raise
 
@@ -59,6 +62,6 @@ def deserialize_command(
         if not isinstance(token, Eol):
             raise RuntimeError
     except EOFError:
-        pass
+        return result, True
 
-    return result
+    return result, False
