@@ -2,8 +2,8 @@ from typing import Self
 
 from pydantic import BaseModel
 
-from ...deserialization import Next, Record, Replay, ProgressiveDeserializer
-from ...token import Eol, Word
+from .....deserialization import Next, Record, Replay, ProgressiveDeserializer
+from .....token import Eol, Word
 
 
 __all__ = (

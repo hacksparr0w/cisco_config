@@ -3,9 +3,10 @@ from textwrap import dedent
 import pytest
 
 from cisco_config import Command, loads
-from cisco_config.predefined.asa.common import Text
+from cisco_config.predefined.asa.v9_20.command.common import Text
 from cisco_config.predefined.asa.v9_20 import (
     AccessListRemarkCommand,
+    Eq,
     Line,
     Log,
     LogSpecification,
@@ -46,7 +47,10 @@ from cisco_config.predefined.asa.v9_20 import (
             ]
         ),
         (
-            "access-list MY_ACL extended permit TCP object-group GRP_NET1691403080 object-group GRP_NET1691403081 object-group GRP_SVCTCP1652862712 log",
+            """
+            access-list MY_ACL extended permit TCP object-group GRP_NET1691403080 object-group GRP_NET1691403081 object-group GRP_SVCTCP1652862712 log
+            access-list MY_ACL extended permit UDP object-group GRP_NET1691403080 object-group GRP_IBMSOBOX eq 888 log
+            """,
             [
                 PortfulExtendedAccessListCommand(
                     id="MY_ACL",
@@ -55,6 +59,15 @@ from cisco_config.predefined.asa.v9_20 import (
                     source=ObjectGroupReference(id="GRP_NET1691403080"),
                     source_port=ObjectGroupReference(id="GRP_NET1691403081"),
                     destination=ObjectGroupReference(id="GRP_SVCTCP1652862712"),
+                    log=Log()
+                ),
+                PortfulExtendedAccessListCommand(
+                    id="MY_ACL",
+                    action="permit",
+                    protocol="UDP",
+                    source=ObjectGroupReference(id="GRP_NET1691403080"),
+                    destination=ObjectGroupReference(id="GRP_IBMSOBOX"),
+                    destination_port=Eq(value=888),
                     log=Log()
                 )
             ]

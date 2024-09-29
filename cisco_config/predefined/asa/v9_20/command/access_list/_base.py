@@ -99,11 +99,6 @@ class ObjectGroupNetworkServiceReference(BaseModel):
     id: str
 
 
-class ObjectGroupReference(BaseModel):
-    name: Literal["object-group"] = "object-group"
-    id: str
-
-
 class ObjectGroupSecurityReference(BaseModel):
     name: Literal["object-group-security"] = "object-group-security"
     id: str
