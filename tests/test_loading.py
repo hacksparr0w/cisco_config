@@ -2,10 +2,9 @@ import pytest
 
 from cisco_config import Command, loads
 from cisco_config.predefined.asa.common.entity import (
-    EntityNotFoundError,
-    EntityRegistry,
     ObjectGroup,
-    ObjectGroupType
+    ObjectGroupType,
+    SimpleEntityRegistry
 )
 
 from cisco_config.predefined.asa.common.command import (
@@ -22,17 +21,6 @@ from cisco_config.predefined.asa.v9_20.command import (
 
     hints
 )
-
-
-class _TestEntityRegistry(EntityRegistry):
-    def __init__(self, object_groups: list[ObjectGroup]) -> None:
-        self._object_groups = {group.name: group for group in object_groups}
-
-    def get_object_group(self, name: str) -> ObjectGroup:
-        try:
-            return self._object_groups[name]
-        except KeyError as error:
-            raise EntityNotFoundError from error
 
 
 @pytest.mark.parametrize(
@@ -114,7 +102,7 @@ def test_simple_loading(data: str, expected: list[Command]) -> None:
     ]
 )
 def test_loading_with_registry(data: str, expected: list[Command]) -> None:
-    registry = _TestEntityRegistry(
+    registry = SimpleEntityRegistry(
         object_groups=[
             ObjectGroup(
                 name="GRP_NET1691403080",
