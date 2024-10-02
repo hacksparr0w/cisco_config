@@ -1,30 +1,60 @@
-from textwrap import dedent
-
 import pytest
 
 from cisco_config import Command, loads
-from cisco_config.predefined.asa.v9_20.command.common import Text
-from cisco_config.predefined.asa.v9_20 import (
-    AccessListRemarkCommand,
+from cisco_config.predefined.asa.common.entity import (
+    EntityNotFoundError,
+    EntityRegistry,
+    ObjectGroup,
+    ObjectGroupType
+)
+
+from cisco_config.predefined.asa.common.command import (
     Eq,
     Line,
     Log,
-    LogSpecification,
     ObjectGroupReference,
+    Text
+)
+
+from cisco_config.predefined.asa.v9_20.command import (
+    AccessListRemarkCommand,
     PortfulExtendedAccessListCommand,
 
     hints
 )
 
 
+class _TestEntityRegistry(EntityRegistry):
+    def __init__(self, object_groups: list[ObjectGroup]) -> None:
+        self._object_groups = {group.name: group for group in object_groups}
+
+    def get_object_group(self, name: str) -> ObjectGroup:
+        try:
+            return self._object_groups[name]
+        except KeyError as error:
+            raise EntityNotFoundError from error
+
+
 @pytest.mark.parametrize(
     "data, expected",
     [
         (
+            "",
+            []
+        ),
+        (
+            """
+            #
+            # This is a comment
+            #
+            """,
+            []
+        ),
+        (
             "access-list outside_access_in remark This is a remark",
             [
                 AccessListRemarkCommand(
-                    id="outside_access_in",
+                    name="outside_access_in",
                     remark=Text(content="This is a remark")
                 )
             ]
@@ -36,16 +66,25 @@ from cisco_config.predefined.asa.v9_20 import (
             """,
             [
                 AccessListRemarkCommand(
-                    id="outside_access_in",
+                    name="outside_access_in",
                     remark=Text(content="This is a remark")
                 ),
                 AccessListRemarkCommand(
-                    id="outside_access_in",
+                    name="outside_access_in",
                     line=Line(number=5),
                     remark=Text(content="This is another remark")
                 )
             ]
-        ),
+        )
+    ]
+)
+def test_simple_loading(data: str, expected: list[Command]) -> None:
+    assert loads(hints, data) == expected
+
+
+@pytest.mark.parametrize(
+    "data, expected",
+    [
         (
             """
             access-list MY_ACL extended permit TCP object-group GRP_NET1691403080 object-group GRP_NET1691403081 object-group GRP_SVCTCP1652862712 log
@@ -53,20 +92,20 @@ from cisco_config.predefined.asa.v9_20 import (
             """,
             [
                 PortfulExtendedAccessListCommand(
-                    id="MY_ACL",
+                    name="MY_ACL",
                     action="permit",
                     protocol="TCP",
-                    source=ObjectGroupReference(id="GRP_NET1691403080"),
-                    source_port=ObjectGroupReference(id="GRP_NET1691403081"),
-                    destination=ObjectGroupReference(id="GRP_SVCTCP1652862712"),
+                    source=ObjectGroupReference(name="GRP_NET1691403080"),
+                    destination=ObjectGroupReference(name="GRP_NET1691403081"),
+                    destination_port=ObjectGroupReference(name="GRP_SVCTCP1652862712"),
                     log=Log()
                 ),
                 PortfulExtendedAccessListCommand(
-                    id="MY_ACL",
+                    name="MY_ACL",
                     action="permit",
                     protocol="UDP",
-                    source=ObjectGroupReference(id="GRP_NET1691403080"),
-                    destination=ObjectGroupReference(id="GRP_IBMSOBOX"),
+                    source=ObjectGroupReference(name="GRP_NET1691403080"),
+                    destination=ObjectGroupReference(name="GRP_IBMSOBOX"),
                     destination_port=Eq(value=888),
                     log=Log()
                 )
@@ -74,5 +113,30 @@ from cisco_config.predefined.asa.v9_20 import (
         )
     ]
 )
-def test(data: str, expected: list[Command]):
-    assert loads(hints, data) == expected
+def test_loading_with_registry(data: str, expected: list[Command]) -> None:
+    registry = _TestEntityRegistry(
+        object_groups=[
+            ObjectGroup(
+                name="GRP_NET1691403080",
+                type=ObjectGroupType.NETWORK
+            ),
+            ObjectGroup(
+                name="GRP_NET1691403081",
+                type=ObjectGroupType.NETWORK
+            ),
+            ObjectGroup(
+                name="GRP_SVCTCP1652862712",
+                type=ObjectGroupType.SERVICE
+            ),
+            ObjectGroup(
+                name="GRP_IBMSOBOX",
+                type=ObjectGroupType.NETWORK
+            )
+        ]
+    )
+
+    context = {
+        "entity_registry": registry
+    }
+
+    assert loads(hints, data, context=context) == expected

@@ -1,8 +1,15 @@
-from typing import Self
+from typing import Optional, Self
 
 from pydantic import BaseModel
 
-from .....deserialization import Next, Record, Replay, ProgressiveDeserializer
+from .....deserialization import (
+    Context,
+    Next,
+    Record,
+    Replay,
+    ProgressiveDeserializer
+)
+
 from .....token import Eol, Word
 
 
@@ -16,7 +23,10 @@ class Data(BaseModel):
     content: bytes
 
     @classmethod
-    def deserialize(cls) -> ProgressiveDeserializer[Self]:
+    def deserialize(
+        cls,
+        context: Optional[Context] = None
+    ) -> ProgressiveDeserializer[Self]:
         content = b""
 
         while True:
@@ -35,7 +45,10 @@ class Text(BaseModel):
     content: str
 
     @classmethod
-    def deserialize(cls) -> ProgressiveDeserializer[Self]:
+    def deserialize(
+        cls,
+        context: Optional[Context] = None
+    ) -> ProgressiveDeserializer[Self]:
         content = ""
 
         while True:

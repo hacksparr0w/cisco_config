@@ -11,6 +11,7 @@ from pydantic import BaseModel
 from pydantic.fields import FieldInfo
 
 from .deserialization import (
+    Context,
     Cut,
     Next,
     ProgressiveDeserializer,
@@ -33,7 +34,10 @@ __all__ = (
 
 class Command(BaseModel):
     @classmethod
-    def deserialize(cls) -> ProgressiveDeserializer[Self]:
+    def deserialize(
+        cls,
+        context: Optional[Context] = None
+    ) -> ProgressiveDeserializer[Self]:
         fields = {
             name: field.annotation
             for name, field in _get_regular_fields(cls).items()
@@ -41,7 +45,12 @@ class Command(BaseModel):
 
         defaults = _get_subcommand_defaults(cls)
 
-        return deserialize_base_model(cls, fields, defaults)
+        return deserialize_base_model(
+            cls,
+            fields=fields,
+            defaults=defaults,
+            context=context
+        )
 
 
 def _is_list_subcommand_hint(hint: type) -> bool:
@@ -123,14 +132,15 @@ def _seek() -> ProgressiveDeserializer[None]:
 
 
 def deserialize_command(
-    hints: tuple[type[Command], ...]
+    hints: tuple[type[Command], ...],
+    context: Optional[Context] = None
 ) -> ProgressiveDeserializer[tuple[Optional[Command], bool]]:
     try:
         yield from _seek()
     except EOFError:
         return None, True
 
-    parent = yield from deserialize(Union[hints])
+    parent = yield from deserialize(Union[hints], context=context)
 
     yield Cut()
 
@@ -161,7 +171,10 @@ def deserialize_command(
         index = yield Record()
 
         try:
-            child, eof = yield from deserialize_command(child_hints)
+            child, eof = yield from deserialize_command(
+                child_hints,
+                context=context
+            )
         except ValueError:
             yield Replay(index=index)
             break

@@ -93,11 +93,11 @@ type _TokenReaderState = Union[
 type TokenReader = Generator[Token, None, None]
 
 
-def token_reader(stream: TextIOBase) -> TokenReader:
+def token_reader(source: TextIOBase) -> TokenReader:
     state = _SeekingState()
 
     while True:
-        character = stream.read(1)
+        character = source.read(1)
 
         iterable, state = state.process(character)
 

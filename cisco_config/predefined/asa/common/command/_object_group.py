@@ -1,12 +1,17 @@
 from typing import Literal
 
-from pydantic import BaseModel, ValidationInfo, WithInfoValidatorFunction
+from pydantic import BaseModel, ValidationInfo
+from pydantic_core.core_schema import WithInfoValidatorFunction
 
 from ..entity import EntityRegistry, ObjectGroupType
 
 
 __all__ = (
     "ObjectGroupReference",
+    "SecurityObjectGroupReference",
+    "UserObjectGroupReference",
+    "NetworkServiceObjectGroupReference",
+
     "validate_object_group_type"
 )
 
@@ -16,10 +21,26 @@ class ObjectGroupReference(BaseModel):
     name: str
 
 
+class NetworkServiceObjectGroupReference(BaseModel):
+    anchor: Literal["object-group-network-service"] = \
+        "object-group-network-service"
+
+    name: str
+
+
+class SecurityObjectGroupReference(BaseModel):
+    anchor: Literal["object-group-security"] = "object-group-security"
+    name: str
+
+
+class UserObjectGroupReference(BaseModel):
+    anchor: Literal["object-group-user"] = "object-group-user"
+    name: str
+
+
 def validate_object_group_type(
     type: ObjectGroupType
 ) -> WithInfoValidatorFunction:
-
     def validate(
         value: ObjectGroupReference,
         info: ValidationInfo

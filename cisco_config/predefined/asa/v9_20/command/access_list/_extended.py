@@ -1,16 +1,16 @@
-from typing import Literal, Optional, Union
+from typing import Literal, Optional
 
-from ._base import (
+from ....common.command import (
     Line,
     Log,
-    NetworkTarget,
-    ObjectGroupSecurityReference,
+    Network,
     Port,
+    SecurityObjectGroupReference,
     TimeRangeReference,
-    UserTarget
+    User
 )
 
-from .....command import Command
+from ......command import Command
 
 
 __all__ = (
@@ -20,18 +20,18 @@ __all__ = (
 
 
 class PortfulExtendedAccessListCommand(Command):
-    name: Literal["access-list"] = "access-list"
-    id: str
+    key: Literal["access-list"] = "access-list"
+    name: str
     line: Optional[Line] = None
     type: Literal["extended"] = "extended"
     action: Literal["deny", "permit"]
     protocol: Literal["TCP", "UDP", "SCTP"]
-    user: Optional[UserTarget] = None
-    source_security_group: Optional[ObjectGroupSecurityReference] = None
-    source: NetworkTarget
+    user: Optional[User] = None
+    source_security_group: Optional[SecurityObjectGroupReference] = None
+    source: Network
     source_port: Optional[Port] = None
-    destination_security_group: Optional[ObjectGroupSecurityReference] = None
-    destination: NetworkTarget
+    destination_security_group: Optional[SecurityObjectGroupReference] = None
+    destination: Network
     destination_port: Optional[Port] = None
     log: Optional[Log] = None
     time_range: Optional[TimeRangeReference] = None
@@ -39,17 +39,17 @@ class PortfulExtendedAccessListCommand(Command):
 
 
 class PortlessExtendedAccessListCommand(Command):
-    name: Literal["access-list"] = "access-list"
-    id: str
+    key: Literal["access-list"] = "access-list"
+    name: str
     line: Optional[Line] = None
     type: Literal["extended"] = "extended"
     action: Literal["deny", "permit"]
     protocol: str
-    user: Optional[UserTarget] = None
-    source_security_group: Optional[ObjectGroupSecurityReference] = None
-    source: NetworkTarget
-    destination_security_group: Optional[ObjectGroupSecurityReference] = None
-    destination: NetworkTarget
+    user: Optional[User] = None
+    source_security_group: Optional[SecurityObjectGroupReference] = None
+    source: Network
+    destination_security_group: Optional[SecurityObjectGroupReference] = None
+    destination: Network
     log: Optional[Log] = None
     time_range: Optional[TimeRangeReference] = None
     inactive: Optional[Literal["inactive"]] = None
