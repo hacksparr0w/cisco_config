@@ -15,6 +15,7 @@ from typing import (
 )
 
 from pydantic import BaseModel, TypeAdapter, ValidationError
+from pydantic.fields import FieldInfo
 
 from .token import Word
 
@@ -119,7 +120,7 @@ def deserialize_none() -> ProgressiveDeserializer[None]:
 
 
 def deserialize_union(
-    members: tuple[type[Any], ...],
+    members: tuple[Any, ...],
     context: Optional[Context] = None
 ) -> ProgressiveDeserializer[Any]:
     index = yield Record()
@@ -137,7 +138,7 @@ def deserialize_union(
 
 
 def deserialize_dictionary(
-    hints: dict[str, type[Any]],
+    hints: dict[str, Any],
     context: Optional[Context] = None
 ) -> ProgressiveDeserializer[dict]:
     result = {}
@@ -148,22 +149,29 @@ def deserialize_dictionary(
     return result
 
 
-def deserialize_base_model(
-    hint: type[BaseModel],
-    fields: Optional[dict[str, type[Any]]] = None,
+def deserialize_base_model[T: BaseModel](
+    hint: type[T],
+    fields: Optional[dict[str, FieldInfo]] = None,
     defaults: dict[str, Any] = {},
     context: Optional[Context] = None
-) -> ProgressiveDeserializer[BaseModel]:
+) -> ProgressiveDeserializer[T]:
     if not fields:
         fields = {
-            name: field.annotation
+            name: field
             for name, field in hint.model_fields.items()
         }
 
-    data = yield from deserialize_dictionary(fields, context=context)
+    hints = {name: field.annotation for name, field in fields.items()} 
+    data = yield from deserialize_dictionary(hints, context=context)
 
     try:
-        result = hint.model_validate({**defaults, **data}, context=context)
+        result = hint.model_validate(
+            {
+                **defaults,
+                **data
+            },
+            context=context
+        )
     except ValidationError as error:
         raise ValueError from error
 
@@ -171,7 +179,7 @@ def deserialize_base_model(
 
 
 def deserialize_annotated(
-    hint: type[Annotated],
+    hint: Any,
     context: Optional[Context] = None
 ) -> ProgressiveDeserializer[Any]:
     member = get_generic_args(hint)[0]
@@ -179,7 +187,8 @@ def deserialize_annotated(
     result = (yield from deserialize(member, context=context))
 
     try:
-        validated = TypeAdapter(hint).validate_python(result, context=context)
+        validated = TypeAdapter(hint) \
+            .validate_python(result, context=context)
     except ValidationError as error:
         raise ValueError from error
 
@@ -187,7 +196,7 @@ def deserialize_annotated(
 
 
 def deserialize(
-    hint: type[Any],
+    hint: Any,
     context: Optional[Context] = None
 ) -> ProgressiveDeserializer[Any]:
     if get_generic_origin(hint) is Annotated:
@@ -215,4 +224,4 @@ def deserialize(
     elif hint is type(None):
         return (yield from deserialize_none())
     else:
-        raise TypeError
+        raise TypeError(f"Unsupported type {hint}")

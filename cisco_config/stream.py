@@ -1,4 +1,4 @@
-from typing import Iterable, Iterator, Self
+from typing import Iterable, Iterator, Optional, Self
 
 
 __all__ = (
@@ -9,6 +9,11 @@ __all__ = (
 
 
 class ReplayableIterator[T]:
+    _iterator: Iterator[T]
+    _is_recording: bool
+    _replay_buffer: list[T]
+    _replay_index: Optional[int]
+
     def __init__(self, iterator: Iterator[T]) -> None:
         self._iterator = iterator
 

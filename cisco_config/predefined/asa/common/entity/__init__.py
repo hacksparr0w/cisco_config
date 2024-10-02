@@ -1,3 +1,5 @@
+from . import _object_group, _registry
+
 from ._object_group import *
 from ._registry import *
 

@@ -94,10 +94,12 @@ type TokenReader = Generator[Token, None, None]
 
 
 def token_reader(source: TextIOBase) -> TokenReader:
-    state = _SeekingState()
+    state: Optional[_TokenReaderState] = _SeekingState()
 
     while True:
         character = source.read(1)
+
+        assert state is not None
 
         iterable, state = state.process(character)
 

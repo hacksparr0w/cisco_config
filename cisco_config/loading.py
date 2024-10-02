@@ -30,7 +30,9 @@ def _consume(
 
         while True:
             if isinstance(request, Cut):
-                request = deserializer.send(stream.cut())
+                stream.cut()
+
+                request = deserializer.send(None)
             elif isinstance(request, Next):
                 try:
                     token = next(stream)
@@ -54,7 +56,7 @@ def _consume(
 
 
 def load(
-    hints: tuple[Command, ...],
+    hints: tuple[type[Command], ...],
     source: TextIOBase,
     context: Optional[Context] = None
 ) -> list[Command]:
@@ -76,7 +78,7 @@ def load(
 
 
 def loads(
-    hints: tuple[Command, ...],
+    hints: tuple[type[Command], ...],
     data: str,
     context: Optional[Context] = None
 ) -> list[Command]:

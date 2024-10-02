@@ -38,80 +38,70 @@ class Command(BaseModel):
         cls,
         context: Optional[Context] = None
     ) -> ProgressiveDeserializer[Self]:
-        fields = {
-            name: field.annotation
-            for name, field in _get_regular_fields(cls).items()
-        }
-
-        defaults = _get_subcommand_defaults(cls)
-
         return deserialize_base_model(
             cls,
-            fields=fields,
-            defaults=defaults,
+            fields=_get_regular_fields(cls),
+            defaults=_get_subcommand_defaults(cls),
             context=context
         )
 
 
-def _is_list_subcommand_hint(hint: type) -> bool:
-    return get_generic_args(hint) is list \
-        and get_generic_args(hint) == (Command,)
+def _is_command_hint(hint: Any) -> bool:
+    if get_generic_origin(hint) is Union:
+        return any(_is_command_hint(arg) for arg in get_generic_args(hint))
+
+    return issubclass(hint, Command)
 
 
-def _is_optional_subcommand_hint(hint: type) -> bool:
-    return get_generic_origin(hint) is Union and \
-        get_generic_args(hint) == (Command, type(None))
+def _is_subcommand_hint(hint: Any) -> bool:
+    return get_generic_origin(hint) is list and \
+        _is_command_hint(get_generic_args(hint)[0])
 
 
-def _is_subcommand_hint(hint: type) -> bool:
-    return _is_list_subcommand_hint(hint) or \
-        _is_optional_subcommand_hint(hint)
+def _is_subcommand_field(field: FieldInfo) -> bool:
+    return _is_subcommand_hint(field.annotation)
 
 
-def _get_subcommand_default(info: FieldInfo) -> Any:
-    if _is_list_subcommand_hint(info.annotation):
-        return []
-
-    if _is_optional_subcommand_hint(info.annotation):
-        return None
-
-    raise TypeError
-
-
-def _get_regular_fields(hint: type) -> dict[str, FieldInfo]:
+def _get_regular_fields[T: BaseModel](hint: type[T]) -> dict[str, FieldInfo]:
     return {
         name: field
         for name, field in hint.model_fields.items()
-        if not _is_subcommand_hint(field.annotation)
+        if not _is_subcommand_field(field)
     }
 
 
-def _get_subcommand_fields(hint: type[BaseModel]) -> dict[str, FieldInfo]:
+def _get_subcommand_defaults[T: BaseModel](
+    hint: type[T]
+) -> dict[str, list[Any]]:
     return {
-        name: field
-        for name, field in hint.model_fields.items()
-        if _is_subcommand_hint(field.annotation)
-    }
-
-
-def _get_subcommand_defaults(hint: type[BaseModel]) -> dict[str, Any]:
-    return {
-        name: _get_subcommand_default(field)
+        name: []
         for name, field in _get_subcommand_fields(hint).items()
     }
 
 
-def _get_subcommand_hint_base(hint: type) -> type[Command]:
+def _get_subcommand_fields[T: BaseModel](
+    hint: type[T]
+) -> dict[str, FieldInfo]:
+    return {
+        name: field
+        for name, field in hint.model_fields.items()
+        if _is_subcommand_field(field)
+    }
+
+
+def _extract_command_hint(hint: Any) -> Any:
     return get_generic_args(hint)[0]
 
 
-def _get_subcommand_name_mapping(
-    hint: type[BaseModel]
-) -> dict[type[Command], str]:
-    return {
-        _get_subcommand_hint_base(field.annotation): name
-        for name, field in _get_subcommand_fields(hint).items()
-    }
+def _get_subcommand_field_name(
+    fields: dict[str, FieldInfo],
+    subcommand: Command
+) -> str:
+    for name, field in fields.items():
+        if isinstance(subcommand, _extract_command_hint(field.annotation)):
+            return name
+
+    raise TypeError
 
 
 def _seek() -> ProgressiveDeserializer[None]:
@@ -132,7 +122,7 @@ def _seek() -> ProgressiveDeserializer[None]:
 
 
 def deserialize_command(
-    hints: tuple[type[Command], ...],
+    parent_hints: tuple[type[Command], ...],
     context: Optional[Context] = None
 ) -> ProgressiveDeserializer[tuple[Optional[Command], bool]]:
     try:
@@ -140,7 +130,7 @@ def deserialize_command(
     except EOFError:
         return None, True
 
-    parent = yield from deserialize(Union[hints], context=context)
+    parent = yield from deserialize(Union[parent_hints], context=context)
 
     yield Cut()
 
@@ -158,9 +148,8 @@ def deserialize_command(
     if not child_fields:
         return parent, False
 
-    child_names = _get_subcommand_name_mapping(parent_hint)
-    child_hints = (
-        _get_subcommand_hint_base(field.annotation)
+    child_hints = tuple(
+        _extract_command_hint(field.annotation)
         for field in child_fields.values()
     )
 
@@ -182,15 +171,8 @@ def deserialize_command(
         if not child:
             break
 
-        name = child_names[type(child)]
-        field = child_fields[name]
-
-        if _is_list_subcommand_hint(field.annotation):
-            children[name].append(child)
-        elif _is_optional_subcommand_hint(field.annotation):
-            children[name] = child
-        else:
-            raise TypeError
+        name = _get_subcommand_field_name(child_fields, child)
+        children[name].append(child)
 
     parent = parent.copy(update=children)
 

@@ -18,7 +18,7 @@ class EntityNotFoundError(Exception):
 
 class EntityRegistry(ABC):
     @abstractmethod
-    def get_object_group(name: str) -> ObjectGroup:
+    def get_object_group(self, name: str) -> ObjectGroup:
         raise NotImplementedError
 
     @staticmethod
