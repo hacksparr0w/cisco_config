@@ -108,18 +108,25 @@ def test_simple_loading(data: str, expected: list[Command]) -> None:
     "data, expected",
     [
         (
-            """
-            access-list MY_ACL extended permit TCP object-group GRP_NET1691403080 object-group GRP_NET1691403081 object-group GRP_SVCTCP1652862712 log
-            access-list MY_ACL extended permit UDP object-group GRP_NET1691403080 object-group GRP_IBMSOBOX eq 888 log
-            """,
+            (
+                "access-list MY_ACL extended permit TCP object-group "
+                "GRP_NET1691403080 object-group GRP_NET1691403081 "
+                "object-group GRP_SVCTCP1652862712 log\n"
+                "access-list MY_ACL extended permit UDP object-group "
+                "GRP_NET1691403080 object-group GRP_IBMSOBOX eq 888 log"
+            ),
             [
                 PortfulExtendedAccessListCommand(
                     name="MY_ACL",
                     action="permit",
                     protocol="TCP",
                     source=ObjectGroupReference(name="GRP_NET1691403080"),
-                    destination=ObjectGroupReference(name="GRP_NET1691403081"),
-                    destination_port=ObjectGroupReference(name="GRP_SVCTCP1652862712"),
+                    destination=ObjectGroupReference(
+                        name="GRP_NET1691403081"
+                    ),
+                    destination_port=ObjectGroupReference(
+                        name="GRP_SVCTCP1652862712"
+                    ),
                     log=Log()
                 ),
                 PortfulExtendedAccessListCommand(
