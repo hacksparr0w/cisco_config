@@ -8,7 +8,9 @@ from cisco_config.predefined.asa.common.entity import (
 )
 
 from cisco_config.predefined.asa.common.command import (
+    DescriptionCommand,
     Eq,
+    HostCommand,
     Line,
     Log,
     ObjectGroupReference,
@@ -17,6 +19,7 @@ from cisco_config.predefined.asa.common.command import (
 
 from cisco_config.predefined.asa.v9_20.command import (
     AccessListRemarkCommand,
+    NetworkObjectCommand,
     PortfulExtendedAccessListCommand,
 
     hints
@@ -61,6 +64,37 @@ from cisco_config.predefined.asa.v9_20.command import (
                     name="outside_access_in",
                     line=Line(number=5),
                     remark=Text(content="This is another remark")
+                )
+            ]
+        ),
+        (
+            """
+            object network HST_158.87.185.149
+             host 158.87.185.149
+             description VLAN1026_GSNI-FFM-	SDE-IR-10
+
+            object network HST_158.87.185.148
+             host 158.87.185.148
+             description defrvep01ir10wm
+            """,
+            [
+                NetworkObjectCommand(
+                    name="HST_158.87.185.149",
+                    target=[HostCommand(value="158.87.185.149")],
+                    description=[
+                        DescriptionCommand(
+                            value=Text(content="VLAN1026_GSNI-FFM- SDE-IR-10")
+                        )
+                    ]
+                ),
+                NetworkObjectCommand(
+                    name="HST_158.87.185.148",
+                    target=[HostCommand(value="158.87.185.148")],
+                    description=[
+                        DescriptionCommand(
+                            value=Text(content="defrvep01ir10wm")
+                        )
+                    ]
                 )
             ]
         )

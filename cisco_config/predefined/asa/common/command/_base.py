@@ -1,7 +1,8 @@
-from typing import Optional, Self
+from typing import Literal, Optional, Self
 
 from pydantic import BaseModel
 
+from .....command import Command
 from .....deserialization import (
     Context,
     Next,
@@ -15,6 +16,7 @@ from .....token import Eol, Word
 
 __all__ = (
     "Data",
+    "DescriptionCommand",
     "Text"
 )
 
@@ -75,3 +77,8 @@ class Text(BaseModel):
                 continue
 
             raise ValueError
+
+
+class DescriptionCommand(Command):
+    key: Literal["description"] = "description"
+    value: Text

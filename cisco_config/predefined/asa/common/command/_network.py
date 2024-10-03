@@ -3,6 +3,7 @@ from typing import Annotated, Literal, Union
 
 from pydantic import BaseModel, AfterValidator
 
+from .....command import Command
 from ..entity import ObjectGroupType
 from ._object import ObjectReference
 from ._object_group import (
@@ -16,6 +17,7 @@ from ._op import Op
 
 __all__ = (
     "Host",
+    "HostCommand",
     "IPv4Subnet",
     "Network",
     "NetworkInterfaceReference",
@@ -26,6 +28,10 @@ __all__ = (
 class Host(BaseModel):
     key: Literal["host"] = "host"
     value: str
+
+
+class HostCommand(Host, Command):
+    pass
 
 
 class IPv4Subnet(BaseModel):
