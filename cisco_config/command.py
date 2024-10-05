@@ -12,7 +12,7 @@ from pydantic.fields import FieldInfo
 
 from .deserialization import (
     Context,
-    Cut,
+    DeserializationError,
     Next,
     ProgressiveDeserializer,
     Record,
@@ -22,7 +22,7 @@ from .deserialization import (
     deserialize_base_model
 )
 
-from .token import Eol, Word
+from .token import Eol, Token, Word
 
 
 __all__ = (
@@ -30,6 +30,10 @@ __all__ = (
 
     "deserialize_command"
 )
+
+
+class CommandArgumentBindingError(DeserializationError):
+    pass
 
 
 class Command(BaseModel):
@@ -104,43 +108,60 @@ def _get_subcommand_field_name(
     raise TypeError
 
 
-def _seek() -> ProgressiveDeserializer[None]:
+def _seek(hint: type[Token]) -> ProgressiveDeserializer[None]:
     index = yield Record()
 
     while True:
         token = yield Next()
 
-        if not isinstance(token, Word):
-            yield Cut()
+        if not isinstance(token, hint):
             index = yield Record()
             continue
 
         break
 
-    yield Cut()
     yield Replay(index=index)
 
 
 def deserialize_command(
     parent_hints: tuple[type[Command], ...],
+    strict: bool = True,
     context: Optional[Context] = None
 ) -> ProgressiveDeserializer[tuple[Optional[Command], bool]]:
     try:
-        yield from _seek()
+        yield from _seek(Word)
     except EOFError:
         return None, True
 
-    parent = yield from deserialize(Union[parent_hints], context=context)
+    parent = None
 
-    yield Cut()
+    try:
+        if not parent_hints:
+            raise DeserializationError
+
+        parent = yield from deserialize(Union[parent_hints], context=context)
+    except DeserializationError:
+        if strict:
+            raise
+
+        try:
+            yield from _seek(Eol)
+        except EOFError:
+            pass
 
     try:
         token = yield Next()
 
         if not isinstance(token, Eol):
-            raise RuntimeError
+            if not strict:
+                return None, False
+
+            raise CommandArgumentBindingError
     except EOFError:
         return parent, True
+
+    if not parent:
+        return parent, False
 
     parent_hint = type(parent)
     child_fields = _get_subcommand_fields(parent_hint)
@@ -162,9 +183,10 @@ def deserialize_command(
         try:
             child, eof = yield from deserialize_command(
                 child_hints,
+                strict=True,
                 context=context
             )
-        except ValueError:
+        except DeserializationError:
             yield Replay(index=index)
             break
 
@@ -174,8 +196,6 @@ def deserialize_command(
         name = _get_subcommand_field_name(child_fields, child)
         children[name].append(child)
 
-    parent = parent.copy(update=children)
-
-    yield Cut()
+    parent = parent.model_copy(update=children)
 
     return parent, eof

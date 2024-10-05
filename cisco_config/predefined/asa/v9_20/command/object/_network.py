@@ -14,5 +14,5 @@ class NetworkObjectCommand(Command):
     type: Literal["network"] = "network"
     name: str
 
-    target: list[HostCommand]
-    description: list[DescriptionCommand]
+    target: list[HostCommand] = []
+    description: list[DescriptionCommand] = []

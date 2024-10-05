@@ -22,7 +22,7 @@ from cisco_config.predefined.asa.v9_20.command import (
     NetworkObjectCommand,
     PortfulExtendedAccessListCommand,
 
-    hints
+    hints as predefined_hints
 )
 
 
@@ -101,7 +101,7 @@ from cisco_config.predefined.asa.v9_20.command import (
     ]
 )
 def test_simple_loading(data: str, expected: list[Command]) -> None:
-    assert loads(hints, data) == expected
+    assert list(loads(predefined_hints, data)) == expected
 
 
 @pytest.mark.parametrize(
@@ -142,7 +142,7 @@ def test_simple_loading(data: str, expected: list[Command]) -> None:
         )
     ]
 )
-def test_loading_with_registry(data: str, expected: list[Command]) -> None:
+def test_advanced_loading(data: str, expected: list[Command]) -> None:
     registry = SimpleEntityRegistry(
         object_groups=[
             ObjectGroup(
@@ -168,4 +168,91 @@ def test_loading_with_registry(data: str, expected: list[Command]) -> None:
         "entity_registry": registry
     }
 
-    assert loads(hints, data, context=context) == expected
+    assert list(loads(predefined_hints, data, context=context)) == expected
+
+
+@pytest.mark.parametrize(
+    "hints, data, expected",
+    [
+        (
+            (),
+            "access-list outside_access_in remark This is a remark",
+            []
+        ),
+        (
+            (
+                AccessListRemarkCommand,
+            ),
+            """
+            clear console-output
+            access-list outside_access_in remark This is a remark
+            clear console-output
+            access-list outside_access_in remark This is another remark
+            clear console-output
+            """,
+            [
+                AccessListRemarkCommand(
+                    name="outside_access_in",
+                    remark=Text(content="This is a remark")
+                ),
+                AccessListRemarkCommand(
+                    name="outside_access_in",
+                    remark=Text(content="This is another remark")
+                )
+            ]
+        ),
+        (
+            (
+                NetworkObjectCommand,
+            ),
+            """
+            object network HST_158.87.185.148
+             host 158.87.185.148
+             description defrvep01ir10wm
+
+            clear console-output
+
+            object network HST_158.87.185.148
+             host 158.87.185.148
+             clear console-output
+             description defrvep01ir10wm
+
+            object network HST_158.87.185.148
+             clear console-output
+             host 158.87.185.148
+             description defrvep01ir10wm
+
+            object network HST_158.87.185.148
+             host 158.87.185.148
+             description defrvep01ir10wm
+            """,
+            [
+                NetworkObjectCommand(
+                    name="HST_158.87.185.148",
+                    target=[HostCommand(value="158.87.185.148")],
+                    description=[
+                        DescriptionCommand(
+                            value=Text(content="defrvep01ir10wm")
+                        )
+                    ]
+                ),
+                NetworkObjectCommand(
+                    name="HST_158.87.185.148",
+                    target=[HostCommand(value="158.87.185.148")]
+                ),
+                NetworkObjectCommand(name="HST_158.87.185.148"),
+                NetworkObjectCommand(
+                    name="HST_158.87.185.148",
+                    target=[HostCommand(value="158.87.185.148")],
+                    description=[
+                        DescriptionCommand(
+                            value=Text(content="defrvep01ir10wm")
+                        )
+                    ]
+                )
+            ]
+        )
+    ]
+)
+def test_lenient_loading(hints, data, expected) -> None:
+    assert list(loads(hints, data, strict=False)) == expected

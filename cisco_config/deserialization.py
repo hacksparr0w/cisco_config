@@ -22,7 +22,6 @@ from .token import Word
 
 __all__ = (
     "Context",
-    "Cut",
     "Deserializable",
     "Next",
     "ProgressiveDeserializer",
@@ -44,10 +43,6 @@ __all__ = (
 )
 
 
-class Cut(BaseModel):
-    pass
-
-
 class Next(BaseModel):
     pass
 
@@ -60,7 +55,7 @@ class Replay(BaseModel):
     index: int
 
 
-type ProgressiveDeserializerRequest = Union[Cut, Next, Record, Replay]
+type ProgressiveDeserializerRequest = Union[Next, Record, Replay]
 type ProgressiveDeserializer[T] = Generator[
     ProgressiveDeserializerRequest,
     Any,
@@ -71,9 +66,12 @@ type ProgressiveDeserializer[T] = Generator[
 Context = dict[str, Any]
 
 
+class DeserializationError(Exception):
+    pass
+
+
 @runtime_checkable
 class Deserializable(Protocol):
-
     @classmethod
     def deserialize(
         cls,
@@ -86,13 +84,16 @@ def deserialize_string() -> ProgressiveDeserializer[str]:
     token = yield Next()
 
     if not isinstance(token, Word):
-        raise ValueError
+        raise DeserializationError
 
     return token.value
 
 
 def deserialize_ipv4_address() -> ProgressiveDeserializer[IPv4Address]:
-    return IPv4Address((yield from deserialize_string()))
+    try:
+        return IPv4Address((yield from deserialize_string()))
+    except ValueError as error:
+        raise DeserializationError from error
 
 
 def deserialize_literal(
@@ -101,17 +102,23 @@ def deserialize_literal(
     result = yield from deserialize_string()
 
     if result not in members:
-        raise ValueError
+        raise DeserializationError
 
     return result
 
 
 def deserialize_integer() -> ProgressiveDeserializer[int]:
-    return int((yield from deserialize_string()))
+    try:
+        return int((yield from deserialize_string()))
+    except ValueError as error:
+        raise DeserializationError from error
 
 
 def deserialize_float() -> ProgressiveDeserializer[float]:
-    return float((yield from deserialize_string()))
+    try:
+        return float((yield from deserialize_string()))
+    except ValueError as error:
+        raise DeserializationError from error
 
 
 def deserialize_none() -> ProgressiveDeserializer[None]:
@@ -129,12 +136,12 @@ def deserialize_union(
     for member in members:
         try:
             return (yield from deserialize(member, context=context))
-        except (ValueError, EOFError) as error:
+        except (DeserializationError, EOFError) as error:
             reason = error
 
             yield Replay(index=index)
 
-    raise ValueError from reason
+    raise DeserializationError from reason
 
 
 def deserialize_dictionary(
@@ -161,7 +168,7 @@ def deserialize_base_model[T: BaseModel](
             for name, field in hint.model_fields.items()
         }
 
-    hints = {name: field.annotation for name, field in fields.items()} 
+    hints = {name: field.annotation for name, field in fields.items()}
     data = yield from deserialize_dictionary(hints, context=context)
 
     try:
@@ -173,7 +180,7 @@ def deserialize_base_model[T: BaseModel](
             context=context
         )
     except ValidationError as error:
-        raise ValueError from error
+        raise DeserializationError from error
 
     return result
 
@@ -190,7 +197,7 @@ def deserialize_annotated(
         validated = TypeAdapter(hint) \
             .validate_python(result, context=context)
     except ValidationError as error:
-        raise ValueError from error
+        raise DeserializationError from error
 
     return validated
 
@@ -199,6 +206,7 @@ def deserialize(
     hint: Any,
     context: Optional[Context] = None
 ) -> ProgressiveDeserializer[Any]:
+    print(f"Deserializing {hint}")
     if get_generic_origin(hint) is Annotated:
         return (yield from deserialize_annotated(hint, context=context))
     elif get_generic_origin(hint) is Literal:

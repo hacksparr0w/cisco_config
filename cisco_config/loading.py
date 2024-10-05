@@ -1,10 +1,9 @@
 from io import StringIO, TextIOBase
-from typing import Optional
+from typing import Optional, Iterator
 
 from .command import Command, deserialize_command
 from .deserialization import (
     Context,
-    Cut,
     Next,
     ProgressiveDeserializer,
     Record,
@@ -29,11 +28,7 @@ def _consume(
         request = next(deserializer)
 
         while True:
-            if isinstance(request, Cut):
-                stream.cut()
-
-                request = deserializer.send(None)
-            elif isinstance(request, Next):
+            if isinstance(request, Next):
                 try:
                     token = next(stream)
                 except StopIteration:
@@ -58,28 +53,34 @@ def _consume(
 def load(
     hints: tuple[type[Command], ...],
     source: TextIOBase,
+    strict: bool = True,
     context: Optional[Context] = None
-) -> list[Command]:
+) -> Iterator[Command]:
     reader = token_reader(source)
     stream = ReplayableIterator(reader)
-    commands = []
 
     while True:
-        deserializer = deserialize_command(hints, context=context)
+        deserializer = deserialize_command(
+            hints,
+            strict=strict,
+            context=context
+        )
+
         command, eof = _consume(deserializer, stream)
 
+        stream.cut()
+
         if command is not None:
-            commands.append(command)
+            yield command
 
         if eof:
-            break
-
-    return commands
+            return
 
 
 def loads(
     hints: tuple[type[Command], ...],
     data: str,
+    strict: bool = True,
     context: Optional[Context] = None
-) -> list[Command]:
-    return load(hints, StringIO(data), context=context)
+) -> Iterator[Command]:
+    return load(hints, StringIO(data), strict=strict, context=context)
