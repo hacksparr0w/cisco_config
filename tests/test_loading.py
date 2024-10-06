@@ -35,9 +35,9 @@ from cisco_config.predefined.asa.v9_20.command import (
         ),
         (
             """
-            #
-            # This is a comment
-            #
+            !
+            ! This is a comment
+            !
             """,
             []
         ),
