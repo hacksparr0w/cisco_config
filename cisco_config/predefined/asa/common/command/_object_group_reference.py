@@ -17,24 +17,24 @@ __all__ = (
 
 
 class ObjectGroupReference(BaseModel):
-    anchor: Literal["object-group"] = "object-group"
+    key: Literal["object-group"] = "object-group"
     name: str
 
 
 class NetworkServiceObjectGroupReference(BaseModel):
-    anchor: Literal["object-group-network-service"] = \
+    key: Literal["object-group-network-service"] = \
         "object-group-network-service"
 
     name: str
 
 
 class SecurityObjectGroupReference(BaseModel):
-    anchor: Literal["object-group-security"] = "object-group-security"
+    key: Literal["object-group-security"] = "object-group-security"
     name: str
 
 
 class UserObjectGroupReference(BaseModel):
-    anchor: Literal["object-group-user"] = "object-group-user"
+    key: Literal["object-group-user"] = "object-group-user"
     name: str
 
 

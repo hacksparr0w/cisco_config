@@ -1,4 +1,3 @@
-from . import object
 from . import access_list
 
 from .access_list import (
@@ -7,20 +6,20 @@ from .access_list import (
     PortlessExtendedAccessListCommand
 )
 
-from .object import NetworkObjectCommand
-
-
-hints = (
-    AccessListRemarkCommand,
-    NetworkObjectCommand,
-    PortfulExtendedAccessListCommand,
-    PortlessExtendedAccessListCommand
-)
+from ...common.command import NetworkObjectCommand
 
 
 __all__ = (
     *access_list.__all__,
-    *object.__all__,
 
     "hints"
+)
+
+
+hints = (
+    NetworkObjectCommand,
+
+    AccessListRemarkCommand,
+    PortfulExtendedAccessListCommand,
+    PortlessExtendedAccessListCommand
 )

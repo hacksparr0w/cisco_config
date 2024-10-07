@@ -1,13 +1,19 @@
 from typing import Literal
 
-from pydantic import BaseModel
+from .....command import Command
+from ._base import DescriptionCommand
+from ._network import HostCommand
 
 
 __all__ = (
-    "ObjectReference",
+    "NetworkObjectCommand",
 )
 
 
-class ObjectReference(BaseModel):
-    anchor: Literal["object"] = "object"
+class NetworkObjectCommand(Command):
+    key: Literal["object"] = "object"
+    type: Literal["network"] = "network"
     name: str
+
+    target: list[HostCommand] = []
+    description: list[DescriptionCommand] = []

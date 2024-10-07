@@ -5,8 +5,8 @@ from pydantic import BaseModel, AfterValidator
 
 from .....command import Command
 from ..entity import ObjectGroupType
-from ._object import ObjectReference
-from ._object_group import (
+from ._object_reference import ObjectReference
+from ._object_group_reference import (
     ObjectGroupReference,
     NetworkServiceObjectGroupReference,
     validate_object_group_type

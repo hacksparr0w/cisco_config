@@ -2,7 +2,7 @@ from typing import Literal, Union
 
 from pydantic import BaseModel
 
-from ._object_group import UserObjectGroupReference
+from ._object_group_reference import UserObjectGroupReference
 
 
 __all__ = (
