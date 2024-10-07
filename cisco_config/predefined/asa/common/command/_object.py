@@ -1,8 +1,8 @@
-from typing import Literal
+from typing import Literal, Union
 
 from .....command import Command
 from ._base import DescriptionCommand
-from ._network import HostCommand
+from ._network import HostCommand, SubnetCommand
 
 
 __all__ = (
@@ -15,5 +15,5 @@ class NetworkObjectCommand(Command):
     type: Literal["network"] = "network"
     name: str
 
-    target: list[HostCommand] = []
+    target: list[Union[HostCommand, SubnetCommand]] = []
     description: list[DescriptionCommand] = []

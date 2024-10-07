@@ -1,3 +1,5 @@
+from ipaddress import IPv4Address
+
 import pytest
 
 from cisco_config import Command, loads
@@ -11,10 +13,12 @@ from cisco_config.predefined.asa.common.command import (
     DescriptionCommand,
     Eq,
     HostCommand,
+    IPv4Subnet,
     Line,
     Log,
     NetworkObjectCommand,
     ObjectGroupReference,
+    SubnetCommand,
     Text
 )
 
@@ -73,8 +77,8 @@ from cisco_config.predefined.asa.v9_20.command import (
              host 192.168.20.148
              description VLAN1026_GSNI-FFM-	SDE-IR-10
 
-            object network HST_192.168.20.148
-             host 192.168.20.148
+            object network NET_192.168.20.0
+             subnet 192.168.20.0 255.255.255.0
              description defrvep01ir10wm
             """,
             [
@@ -88,8 +92,15 @@ from cisco_config.predefined.asa.v9_20.command import (
                     ]
                 ),
                 NetworkObjectCommand(
-                    name="HST_192.168.20.148",
-                    target=[HostCommand(value="192.168.20.148")],
+                    name="NET_192.168.20.0",
+                    target=[
+                        SubnetCommand(
+                            value=IPv4Subnet(
+                                address=IPv4Address("192.168.20.0"),
+                                mask=IPv4Address("255.255.255.0")
+                            )
+                        )
+                    ],
                     description=[
                         DescriptionCommand(
                             value=Text(content="defrvep01ir10wm")

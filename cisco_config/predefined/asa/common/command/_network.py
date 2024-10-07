@@ -1,5 +1,5 @@
 from ipaddress import IPv4Address
-from typing import Annotated, Literal, Union
+from typing import Annotated, Literal, Optional, Union
 
 from pydantic import BaseModel, AfterValidator
 
@@ -21,7 +21,8 @@ __all__ = (
     "IPv4Subnet",
     "Network",
     "NetworkInterfaceReference",
-    "Port"
+    "Port",
+    "SubnetCommand"
 )
 
 
@@ -42,6 +43,12 @@ class IPv4Subnet(BaseModel):
 class NetworkInterfaceReference(BaseModel):
     key: Literal["interface"] = "interface"
     name: str
+
+
+class SubnetCommand(Command):
+    key: Literal["subnet"] = "subnet"
+    value: IPv4Subnet
+    service: Optional[str] = None
 
 
 Network = Union[
