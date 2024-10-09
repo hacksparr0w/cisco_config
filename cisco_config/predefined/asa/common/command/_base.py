@@ -62,9 +62,6 @@ class Text(BaseModel):
                 token = None
 
             if isinstance(token, Eol) or token is None:
-                if not content:
-                    raise ValueError
-
                 yield Replay(index=index)
 
                 return cls(content=content)

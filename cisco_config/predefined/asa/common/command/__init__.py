@@ -1,4 +1,5 @@
 from . import (
+    _banner,
     _base,
     _line,
     _log,
@@ -11,6 +12,7 @@ from . import (
     _user
 )
 
+from ._banner import *
 from ._base import *
 from ._line import *
 from ._log import *
@@ -24,6 +26,7 @@ from ._user import *
 
 
 __all__ = (
+    _banner.__all__ +
     _base.__all__ +
     _line.__all__ +
     _log.__all__ +
