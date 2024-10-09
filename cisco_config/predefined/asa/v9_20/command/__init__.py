@@ -6,7 +6,10 @@ from .access_list import (
     PortlessExtendedAccessListCommand
 )
 
-from ...common.command import NetworkObjectCommand
+from ...common.command import (
+    BannerCommand,
+    NetworkObjectCommand
+)
 
 
 __all__ = (
@@ -17,6 +20,7 @@ __all__ = (
 
 
 hints = (
+    BannerCommand,
     NetworkObjectCommand,
 
     AccessListRemarkCommand,

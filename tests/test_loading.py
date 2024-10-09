@@ -10,6 +10,7 @@ from cisco_config.predefined.asa.common.entity import (
 )
 
 from cisco_config.predefined.asa.common.command import (
+    BannerCommand,
     DescriptionCommand,
     Eq,
     HostCommand,
@@ -107,6 +108,52 @@ from cisco_config.predefined.asa.v9_20.command import (
                         )
                     ]
                 )
+            ]
+        ),
+        (
+            """
+            banner login
+            banner login  *******************************************************************
+            banner login                              TEST Corp. 
+            banner login  WARNING: Warning text you want to display.
+            banner login           Another warning text you want to display.
+            banner login  *******************************************************************
+            banner login
+            """,
+            [
+                BannerCommand(type="login", value=Text(content="")),
+                BannerCommand(
+                    type="login",
+                    value=Text(
+                        content=(
+                            "************************************************"
+                            "*******************"
+                        )
+                    )
+                ),
+                BannerCommand(type="login", value=Text(content="TEST Corp.")),
+                BannerCommand(
+                    type="login",
+                    value=Text(
+                        content="WARNING: Warning text you want to display."
+                    )
+                ),
+                BannerCommand(
+                    type="login",
+                    value=Text(
+                        content="Another warning text you want to display."
+                    )
+                ),
+                BannerCommand(
+                    type="login",
+                    value=Text(
+                        content=(
+                            "************************************************"
+                            "*******************"
+                        ) 
+                    )
+                ),
+                BannerCommand(type="login", value=Text(content=""))
             ]
         )
     ]
