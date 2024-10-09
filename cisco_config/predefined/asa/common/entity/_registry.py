@@ -22,7 +22,7 @@ class EntityRegistry(ABC):
         raise NotImplementedError
 
     @staticmethod
-    def warn_unavailable():
+    def warn_unavailable() -> None:
         warnings.warn(
             "Entity registry is not available for validation, "
             "command argument binding may not work as expected"
