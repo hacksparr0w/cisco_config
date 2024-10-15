@@ -1,4 +1,4 @@
-from io import StringIO, TextIOBase
+from io import TextIOBase
 from typing import Optional, Iterator
 
 from .command import Command, deserialize_command
@@ -16,7 +16,6 @@ from .token import Token, token_reader
 
 __all__ = (
     "load",
-    "loads"
 )
 
 
@@ -52,11 +51,11 @@ def _consume(
 
 def load(
     hints: tuple[type[Command], ...],
-    source: TextIOBase,
+    data: TextIOBase,
     strict: bool = True,
     context: Optional[Context] = None
 ) -> Iterator[Command]:
-    reader = token_reader(source)
+    reader = token_reader(data)
     stream = ReplayableIterator(reader)
 
     while True:
@@ -75,12 +74,3 @@ def load(
 
         if eof:
             return
-
-
-def loads(
-    hints: tuple[type[Command], ...],
-    data: str,
-    strict: bool = True,
-    context: Optional[Context] = None
-) -> Iterator[Command]:
-    return load(hints, StringIO(data), strict=strict, context=context)

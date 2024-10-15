@@ -11,6 +11,13 @@ from cisco_config.token import Eol, Comment, Word, token_reader
     [
         (
             """
+            : Saved
+
+            : 
+            : Hardware:   FPR-2110
+            :
+            ASA Version 9.18(4)40 <context>
+
             hostname Router11
              !
              interface FastEthernet0/0
@@ -31,6 +38,21 @@ from cisco_config.token import Eol, Comment, Word, token_reader
               default-information originate metric 5 route-map check-default
             """,
             (
+                Eol(),
+                Comment(content=" Saved"),
+                Eol(),
+                Eol(),
+                Comment(content=" "),
+                Eol(),
+                Comment(content=" Hardware:   FPR-2110"),
+                Eol(),
+                Comment(content=""),
+                Eol(),
+                Word(value="ASA"),
+                Word(value="Version"),
+                Word(value="9.18(4)40"),
+                Word(value="<context>"),
+                Eol(),
                 Eol(),
                 Word(value="hostname"),
                 Word(value="Router11"),
@@ -88,5 +110,5 @@ from cisco_config.token import Eol, Comment, Word, token_reader
         )
     ]
 )
-def test_token_reader(input, expected):
+def test(input, expected):
     assert tuple(token_reader(StringIO(dedent(input)))) == expected

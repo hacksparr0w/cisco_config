@@ -1,6 +1,6 @@
-from typing import Literal, Union
+from typing import Literal
 
-from .....command import Command
+from ....command import Command
 from ._base import Text
 
 
@@ -13,4 +13,3 @@ class BannerCommand(Command):
     key: Literal["banner"] = "banner"
     type: Literal["asdm", "exec", "login", "motd"]
     value: Text
-

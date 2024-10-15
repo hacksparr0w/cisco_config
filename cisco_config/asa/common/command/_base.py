@@ -1,9 +1,8 @@
-from typing import Literal, Optional, Self
+from typing import Annotated, Literal, Optional, Self
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
-from .....command import Command
-from .....deserialization import (
+from ....deserialization import (
     Context,
     Next,
     Record,
@@ -11,12 +10,12 @@ from .....deserialization import (
     ProgressiveDeserializer
 )
 
-from .....token import Eol, Word
+from ....token import Eol, Word
 
 
 __all__ = (
     "Data",
-    "DescriptionCommand",
+    "No",
     "Text"
 )
 
@@ -62,6 +61,9 @@ class Text(BaseModel):
                 token = None
 
             if isinstance(token, Eol) or token is None:
+                if not content:
+                    raise ValueError
+
                 yield Replay(index=index)
 
                 return cls(content=content)
@@ -76,6 +78,4 @@ class Text(BaseModel):
             raise ValueError
 
 
-class DescriptionCommand(Command):
-    key: Literal["description"] = "description"
-    value: Text
+type No = Annotated[Optional[Literal["no"]], Field(default=None)]

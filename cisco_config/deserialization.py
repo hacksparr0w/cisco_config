@@ -8,6 +8,7 @@ from typing import (
     Optional,
     Protocol,
     Self,
+    TypeAliasType,
     Union,
     get_args as get_generic_args,
     get_origin as get_generic_origin,
@@ -144,10 +145,23 @@ def deserialize_union(
     raise DeserializationError from reason
 
 
+def deserialize_tuple(
+    members: tuple[Any, ...],
+    context: Optional[Context] = None
+) -> ProgressiveDeserializer[tuple[Any, ...]]:
+    result = []
+
+    for member in members:
+        item = yield from deserialize(member, context=context)
+        result.append(item)
+
+    return tuple(result)
+
+
 def deserialize_dictionary(
     hints: dict[str, Any],
     context: Optional[Context] = None
-) -> ProgressiveDeserializer[dict]:
+) -> ProgressiveDeserializer[dict[str, Any]]:
     result = {}
 
     for name, hint in hints.items():
@@ -206,17 +220,22 @@ def deserialize(
     hint: Any,
     context: Optional[Context] = None
 ) -> ProgressiveDeserializer[Any]:
-    print(f"Deserializing {hint}")
     if get_generic_origin(hint) is Annotated:
         return (yield from deserialize_annotated(hint, context=context))
     elif get_generic_origin(hint) is Literal:
         members = get_generic_args(hint)
 
         return (yield from deserialize_literal(members))
+    elif get_generic_origin(hint) is tuple:
+        members = get_generic_args(hint)
+
+        return (yield from deserialize_tuple(members, context=context))
     elif get_generic_origin(hint) is Union:
         members = get_generic_args(hint)
 
         return (yield from deserialize_union(members, context=context))
+    elif isinstance(hint, TypeAliasType):
+        return (yield from deserialize(hint.__value__, context=context))
     elif issubclass(hint, Deserializable):
         return (yield from hint.deserialize(context=context))
     elif issubclass(hint, BaseModel):

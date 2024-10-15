@@ -37,7 +37,7 @@ type Token = Union[
 
 
 class _ControlCharacter:
-    COMMENT_START_CHARACTERS = ("!",)
+    COMMENT_START_CHARACTERS = ("!", ":")
 
 
 type _ProcessingResult = tuple[Iterable[Token], Optional[_TokenReaderState]]
