@@ -27,7 +27,7 @@ jobs:
           poetry install
       - name: Run mypy
         run: |
-          poetry run mypy --enable-incomplete-feature=NewGenericSyntax cisco_config tests
+          poetry run mypy cisco_config tests
       - name: Run pytest
         run: |
           poetry run pytest
