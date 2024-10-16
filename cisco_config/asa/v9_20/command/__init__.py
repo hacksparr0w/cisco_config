@@ -1,4 +1,6 @@
 from ...common.command import (
+    AccessGroupCommand,
+    AccessListRemarkCommand,
     AsaVersionCommand,
     BannerCommand,
     DnsServerGroupCommand,
@@ -9,6 +11,7 @@ from ...common.command import (
     NetworkObjectCommand,
     ObjectGroupSearchCommand,
     PortChannelInterfaceCommand,
+    ServiceObjectGroupCommand,
     TerminalWidthCommand
 )
 
@@ -19,6 +22,8 @@ __all__ = (
 
 
 hints = (
+    AccessGroupCommand,
+    AccessListRemarkCommand,
     AsaVersionCommand,
     BannerCommand,
     DnsServerGroupCommand,
@@ -29,5 +34,6 @@ hints = (
     NetworkObjectCommand,
     ObjectGroupSearchCommand,
     PortChannelInterfaceCommand,
+    ServiceObjectGroupCommand,
     TerminalWidthCommand
 )

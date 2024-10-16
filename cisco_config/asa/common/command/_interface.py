@@ -9,6 +9,7 @@ from ....command import Command
 __all__ = (
     "InterfaceIpAddressCommand",
     "InterfaceNameCommand",
+    "InterfaceReference",
     "InterfaceSecurityLevelCommand",
     "PortChannelInterfaceCommand",
     "StandbyUnit",
@@ -25,6 +26,11 @@ def _validate_port_channel(value: str) -> str:
         return value
 
     raise ValueError
+
+
+class InterfaceReference(BaseModel):
+    key: Literal["interface"] = "interface"
+    name: str
 
 
 class StandbyUnit(BaseModel):

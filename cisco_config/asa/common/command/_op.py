@@ -15,22 +15,22 @@ __all__ = (
 
 class Eq(BaseModel):
     key: Literal["eq"] = "eq"
-    value: int
+    value: str
 
 
 class Gt(BaseModel):
     key: Literal["gt"] = "gt"
-    value: int
+    value: str
 
 
 class Lt(BaseModel):
     key: Literal["lt"] = "lt"
-    value: int
+    value: str
 
 
 class Neq(BaseModel):
     key: Literal["neq"] = "neq"
-    value: int
+    value: str
 
 
 class Range(BaseModel):

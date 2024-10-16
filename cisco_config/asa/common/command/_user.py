@@ -3,18 +3,13 @@ from typing import Literal, Union
 from pydantic import BaseModel
 
 from ._object_group_reference import UserObjectGroupReference
+from ._user_group import UserGroupReference
 
 
 __all__ = (
     "User",
-    "UserGroupReference",
     "UserReference"
 )
-
-
-class UserGroupReference(BaseModel):
-    key: Literal["user-group"] = "user-group"
-    name: str
 
 
 class UserReference(BaseModel):
@@ -22,7 +17,7 @@ class UserReference(BaseModel):
     name: str
 
 
-User = Union[
+type User = Union[
     UserObjectGroupReference,
     UserGroupReference,
     UserReference

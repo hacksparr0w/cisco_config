@@ -1,4 +1,6 @@
 from . import (
+    _access_group,
+    _access_list,
     _authorization,
     _banner,
     _base,
@@ -16,12 +18,15 @@ from . import (
     _object_group_reference,
     _object_reference,
     _op,
+    _service,
     _subnet,
     _terminal,
     _time_range,
     _user
 )
 
+from ._access_group import *
+from ._access_list import *
 from ._authorization import *
 from ._banner import *
 from ._base import *
@@ -39,6 +44,7 @@ from ._object_group import *
 from ._object_group_reference import *
 from ._object_reference import *
 from ._op import *
+from ._service import *
 from ._subnet import *
 from ._terminal import *
 from ._time_range import *
@@ -46,6 +52,8 @@ from ._user import *
 
 
 __all__ = (
+    _access_group.__all__ +
+    _access_list.__all__ +
     _authorization.__all__ +
     _banner.__all__ +
     _base.__all__ +
@@ -63,6 +71,7 @@ __all__ = (
     _object_group_reference.__all__ +
     _object_reference.__all__ +
     _op.__all__ +
+    _service.__all__ +
     _subnet.__all__ +
     _terminal.__all__ +
     _time_range.__all__ +
