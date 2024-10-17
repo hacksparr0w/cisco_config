@@ -2,12 +2,12 @@ from typing import Literal, Optional, Union
 
 from pydantic import BaseModel
 
+from ._icmp import IcmpOptions
 from ._op import Op
 from ._object_reference import ObjectReference
 
 
 __all__ = (
-    "IcmpServiceDetail",
     "IcmpService",
     "L4ServiceSource",
     "L4ServiceDestination",
@@ -17,14 +17,9 @@ __all__ = (
 )
 
 
-class IcmpServiceDetail(BaseModel):
-    type: int
-    code: Optional[int] = None
-
-
 class IcmpService(BaseModel):
     key: Literal["icmp", "icmp6"]
-    detail: Optional[IcmpServiceDetail] = None
+    options: Optional[IcmpOptions] = None
 
 
 class L4ServiceSource(BaseModel):
