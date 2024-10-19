@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 __all__ = (
     "IcmpType",
-    "IcmpOptions",
+    "IcmpOptions"
 )
 
 

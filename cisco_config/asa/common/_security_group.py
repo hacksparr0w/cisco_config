@@ -2,15 +2,14 @@ from typing import Literal, Union
 
 from pydantic import BaseModel
 
-from ....command import Command
+from ...command import Command
 from ._name import Name
 from ._tag import Tag
 
 
 __all__ = (
     "SecurityGroup",
-    "SecurityGroupCommand",
-    "SecurityGroupReference",
+    "SecurityGroupCommand"
 )
 
 
@@ -20,8 +19,4 @@ class SecurityGroup(BaseModel):
 
 
 class SecurityGroupCommand(SecurityGroup, Command):
-    pass
-
-
-class SecurityGroupReference(SecurityGroup):
     pass

@@ -1,7 +1,6 @@
 from typing import Literal, Optional
 
-from pydantic import BaseModel
-
+from ...command import Command
 from ._interface import InterfaceReference
 
 
@@ -10,7 +9,7 @@ __all__ = (
 )
 
 
-class AccessGroupCommand(BaseModel):
+class AccessGroupCommand(Command):
     key: Literal["access-group"] = "access-group"
     name: str
     type: Literal["in", "out"]

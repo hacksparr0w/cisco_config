@@ -1,6 +1,9 @@
+from enum import StrEnum
 from typing import Literal, Optional, Union
 
-from ....command import Command
+from pydantic import BaseModel
+
+from ...command import Command
 from ._base import Text
 from ._host import Host
 from ._subnet import IPv4Subnet
@@ -8,10 +11,24 @@ from ._subnet import IPv4Subnet
 
 __all__ = (
     "NetworkObjectCommand",
+    "Object",
+    "ObjectCommand",
     "ObjectDescriptionCommand",
     "ObjectHostCommand",
-    "ObjectSubnetCommand"
+    "ObjectSubnetCommand",
+    "ObjectType"
 )
+
+
+class ObjectType(StrEnum):
+    NETWORK = "network"
+    NETWORK_SERVICE = "network-service"
+    SERVICE = "service"
+
+
+class Object(BaseModel):
+    type: ObjectType
+    name: str
 
 
 class ObjectDescriptionCommand(Command):
@@ -35,3 +52,6 @@ class NetworkObjectCommand(Command):
 
     target: list[Union[ObjectHostCommand, ObjectSubnetCommand]] = []
     description: list[ObjectDescriptionCommand] = []
+
+
+ObjectCommand = NetworkObjectCommand

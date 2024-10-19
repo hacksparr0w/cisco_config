@@ -1,8 +1,8 @@
-from typing import Annotated, Literal, Optional, Self
+from typing import Optional, Self
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
-from ....deserialization import (
+from ...deserialization import (
     Context,
     Next,
     Record,
@@ -10,14 +10,18 @@ from ....deserialization import (
     ProgressiveDeserializer
 )
 
-from ....token import Eol, Word
+from ...token import Eol, Word
 
 
 __all__ = (
     "Data",
-    "No",
+    "Named",
     "Text"
 )
+
+
+class Named:
+    name: str
 
 
 class Data(BaseModel):
@@ -76,6 +80,3 @@ class Text(BaseModel):
                 continue
 
             raise ValueError
-
-
-type No = Annotated[Optional[Literal["no"]], Field(default=None)]

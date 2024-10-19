@@ -1,6 +1,6 @@
 from typing import Literal
 
-from ....command import Command
+from ...command import Command
 from ._base import Text
 
 

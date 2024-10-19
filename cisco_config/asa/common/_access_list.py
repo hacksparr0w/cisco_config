@@ -2,26 +2,29 @@ from typing import Annotated, Literal, Optional, Union
 
 from pydantic.functional_validators import AfterValidator
 
-from ....command import Command
-from ..entity import ObjectGroupType, ObjectType
+from ...command import Command
 from ._base import Text
+from ._entity import validate_object_group_type, validate_object_type
 from ._host import Host
 from ._icmp import IcmpOptions
 from ._interface import InterfaceReference
 from ._line import Line
 from ._log import Log
+from ._object import ObjectType
+from ._object_group import ObjectGroupType
 from ._object_group_reference import (
     NetworkServiceObjectGroupReference,
     ObjectGroupReference,
     SecurityObjectGroupReference,
-    validate_object_group_type
+    UserObjectGroupReference
 )
 
-from ._object_reference import ObjectReference, validate_object_type
-from ._security_group import SecurityGroupReference
+from ._object_reference import ObjectReference
+from ._security_group_reference import SecurityGroupReference
 from ._subnet import IPv4Subnet
-from ._time_range import TimeRangeReference
-from ._user import User
+from ._time_range_reference import TimeRangeReference
+from ._user_group_reference import UserGroupReference
+from ._user_reference import UserReference
 
 
 __all__ = (
@@ -29,7 +32,8 @@ __all__ = (
     "AccessListRemarkCommand",
     "AccessListSecurityGroup",
     "AccessListTarget",
-    "ExtendedIcmpAccessListCommand",
+    "AccessListUser",
+    "ExtendedIcmpAccessListCommand"
 )
 
 
@@ -51,6 +55,13 @@ type AccessListTarget = Union[
         )
     ],
     NetworkServiceObjectGroupReference
+]
+
+
+type AccessListUser = Union[
+    UserObjectGroupReference,
+    UserGroupReference,
+    UserReference
 ]
 
 
@@ -86,7 +97,7 @@ class ExtendedIcmpAccessListCommand(Command):
     type: Literal["extended"] = "extended"
     action: Literal["deny", "permit"]
     protocol: Literal["icmp", "icmp6"]
-    user: Optional[User] = None
+    user: Optional[AccessListUser] = None
     source_security_group: Optional[AccessListSecurityGroup] = None
     source: AccessListTarget
     destination_security_group: Optional[AccessListSecurityGroup] = None

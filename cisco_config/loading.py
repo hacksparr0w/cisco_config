@@ -51,11 +51,11 @@ def _consume(
 
 def load(
     hints: tuple[type[Command], ...],
-    data: TextIOBase,
+    source: TextIOBase,
     strict: bool = True,
     context: Optional[Context] = None
 ) -> Iterator[Command]:
-    reader = token_reader(data)
+    reader = token_reader(source)
     stream = ReplayableIterator(reader)
 
     while True:

@@ -3,7 +3,7 @@ from typing import Annotated, Literal, Optional
 
 from pydantic import BaseModel, AfterValidator
 
-from ....command import Command
+from ...command import Command
 
 
 __all__ = (
@@ -12,7 +12,7 @@ __all__ = (
     "InterfaceReference",
     "InterfaceSecurityLevelCommand",
     "PortChannelInterfaceCommand",
-    "StandbyUnit",
+    "StandbyUnit"
 )
 
 
