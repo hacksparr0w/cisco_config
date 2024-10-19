@@ -1,5 +1,6 @@
 from typing import Annotated, Literal, Optional, Union
 
+from pydantic import BaseModel
 from pydantic.functional_validators import AfterValidator
 
 from ...command import Command
@@ -8,28 +9,29 @@ from ._entity import validate_object_group_type, validate_object_type
 from ._host import Host
 from ._icmp import IcmpOptions
 from ._interface import InterfaceReference
-from ._line import Line
-from ._log import Log
-from ._object import ObjectType
-from ._object_group import ObjectGroupType
-from ._object_group_reference import (
+from ._object import ObjectType, ObjectReference
+from ._object_group import (
     NetworkServiceObjectGroupReference,
+    ObjectGroupType,
     ObjectGroupReference,
     SecurityObjectGroupReference,
     UserObjectGroupReference
 )
 
-from ._object_reference import ObjectReference
 from ._operator import Operator
-from ._security_group_reference import SecurityGroupReference
+from ._security_group import SecurityGroupReference
 from ._subnet import IPv4Subnet
-from ._time_range_reference import TimeRangeReference
-from ._user_group_reference import UserGroupReference
-from ._user_reference import UserReference
+from ._time_range import TimeRangeReference
+from ._user_group import UserGroupReference
+from ._user import UserReference
 
 
 __all__ = (
     "AccessListIcmpOptions",
+    "AccessListLine",
+    "AccessListLogInterval",
+    "AccessListLogOptions",
+    "AccessListLog",
     "AccessListPort",
     "AccessListRemarkCommand",
     "AccessListSecurityGroup",
@@ -38,6 +40,27 @@ __all__ = (
     "ExtendedIcmpAccessListCommand",
     "ExtendedPortbasedAccessListCommand"
 )
+
+
+class AccessListLine(BaseModel):
+    key: Literal["line"] = "line"
+    number: int
+
+
+class AccessListLogInterval(BaseModel):
+    key: Literal["interval"] = "interval"
+    seconds: int
+
+
+class AccessListLogOptions(BaseModel):
+    level: Optional[int] = None
+    interval: Optional[AccessListLogInterval] = None
+
+
+class AccessListLog(BaseModel):
+    key: Literal["log"] = "log"
+    options: Union[Literal["disable", "default"], AccessListLogOptions] = \
+        AccessListLogOptions()
 
 
 type AccessListTarget = Union[
@@ -99,7 +122,7 @@ type AccessListPort = Union[
 class AccessListRemarkCommand(Command):
     key: Literal["access-list"] = "access-list"
     name: str
-    line: Optional[Line] = None
+    line: Optional[AccessListLine] = None
     type: Literal["remark"] = "remark"
     value: Text
 
@@ -107,7 +130,7 @@ class AccessListRemarkCommand(Command):
 class ExtendedIcmpAccessListCommand(Command):
     key: Literal["access-list"] = "access-list"
     name: str
-    line: Optional[Line] = None
+    line: Optional[AccessListLine] = None
     type: Literal["extended"] = "extended"
     action: Literal["deny", "permit"]
     protocol: Literal["icmp", "icmp6"]
@@ -117,7 +140,7 @@ class ExtendedIcmpAccessListCommand(Command):
     destination_security_group: Optional[AccessListSecurityGroup] = None
     destination: AccessListTarget
     options: Optional[AccessListIcmpOptions] = None
-    log: Optional[Log] = None
+    log: Optional[AccessListLog] = None
     time: Optional[TimeRangeReference] = None
     inactive: Optional[Literal["inactive"]] = None
 
@@ -125,7 +148,7 @@ class ExtendedIcmpAccessListCommand(Command):
 class ExtendedPortbasedAccessListCommand(Command):
     key: Literal["access-list"] = "access-list"
     name: str
-    line: Optional[Line] = None
+    line: Optional[AccessListLine] = None
     type: Literal["extended"] = "extended"
     action: Literal["deny", "permit"]
     protocol: Literal["tcp", "udp", "sctp"]
@@ -136,6 +159,6 @@ class ExtendedPortbasedAccessListCommand(Command):
     destination_security_group: Optional[AccessListSecurityGroup] = None
     destination: AccessListTarget
     destination_port: Optional[AccessListPort] = None
-    log: Optional[Log] = None
+    log: Optional[AccessListLog] = None
     time: Optional[TimeRangeReference] = None
     inactive: Optional[Literal["inactive"]] = None

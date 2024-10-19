@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Optional
 
 from ...command import Command
 
@@ -12,4 +12,4 @@ class AsaVersionCommand(Command):
     key: Literal["ASA"] = "ASA"
     type: Literal["Version"] = "Version"
     value: str
-    context: Literal["<context>"] = "<context>"
+    environment: Optional[str] = None

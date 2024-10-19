@@ -2,6 +2,8 @@ from ..common import (
     AccessGroupCommand,
     AccessListRemarkCommand,
     AsaVersionCommand,
+    AutoMacAddressCommand,
+    AutoMacAddressRemoveCommand,
     BannerCommand,
     DnsServerGroupCommand,
     DomainNameCommand,
@@ -9,10 +11,10 @@ from ..common import (
     ExtendedIcmpAccessListCommand,
     ExtendedPortbasedAccessListCommand,
     HostnameCommand,
+    InterfaceCommand,
     NamesCommand,
     NetworkObjectCommand,
     ObjectGroupSearchCommand,
-    PortChannelInterfaceCommand,
     ServiceObjectGroupCommand,
     TerminalWidthCommand
 )
@@ -27,6 +29,8 @@ hints = (
     AccessGroupCommand,
     AccessListRemarkCommand,
     AsaVersionCommand,
+    AutoMacAddressCommand,
+    AutoMacAddressRemoveCommand,
     BannerCommand,
     DnsServerGroupCommand,
     DomainNameCommand,
@@ -34,10 +38,10 @@ hints = (
     ExtendedIcmpAccessListCommand,
     ExtendedPortbasedAccessListCommand,
     HostnameCommand,
+    InterfaceCommand,
     NamesCommand,
     NetworkObjectCommand,
     ObjectGroupSearchCommand,
-    PortChannelInterfaceCommand,
     ServiceObjectGroupCommand,
     TerminalWidthCommand
 )

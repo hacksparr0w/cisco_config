@@ -5,22 +5,26 @@ from pydantic import BaseModel
 
 from ...command import Command
 from ._icmp import IcmpOptions
-from ._object_reference import ObjectReference
+from ._object import ObjectReference
 from ._operator import Operator
 
 
 __all__ = (
+    "NetworkServiceObjectGroupReference",
     "ObjectGroup",
     "ObjectGroupCommand",
     "ObjectGroupIcmpService",
     "ObjectGroupL4Service",
     "ObjectGroupL4ServiceDestination",
     "ObjectGroupL4ServiceSource",
+    "ObjectGroupReference",
     "ObjectGroupSearchCommand",
     "ObjectGroupService",
     "ObjectGroupType",
     "ServiceObjectGroupCommand",
-    "ServiceObjectGroupServiceObjectCommand"
+    "ServiceObjectGroupServiceObjectCommand",
+    "SecurityObjectGroupReference",
+    "UserObjectGroupReference",
 )
 
 
@@ -91,3 +95,25 @@ class ServiceObjectGroupCommand(Command):
 
 
 ObjectGroupCommand = ServiceObjectGroupCommand
+
+
+class ObjectGroupReference(BaseModel):
+    key: Literal["object-group"] = "object-group"
+    name: str
+
+
+class NetworkServiceObjectGroupReference(BaseModel):
+    key: Literal["object-group-network-service"] = \
+        "object-group-network-service"
+
+    name: str
+
+
+class SecurityObjectGroupReference(BaseModel):
+    key: Literal["object-group-security"] = "object-group-security"
+    name: str
+
+
+class UserObjectGroupReference(BaseModel):
+    key: Literal["object-group-user"] = "object-group-user"
+    name: str

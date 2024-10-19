@@ -15,6 +15,7 @@ __all__ = (
     "ObjectCommand",
     "ObjectDescriptionCommand",
     "ObjectHostCommand",
+    "ObjectReference",
     "ObjectSubnetCommand",
     "ObjectType"
 )
@@ -55,3 +56,8 @@ class NetworkObjectCommand(Command):
 
 
 ObjectCommand = NetworkObjectCommand
+
+
+class ObjectReference(BaseModel):
+    key: Literal["object"] = "object"
+    name: str

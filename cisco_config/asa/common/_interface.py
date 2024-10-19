@@ -1,31 +1,35 @@
 from ipaddress import IPv4Address
-from typing import Annotated, Literal, Optional
+from typing import Literal, Optional, Union
 
-from pydantic import BaseModel, AfterValidator
+from pydantic import BaseModel
 
 from ...command import Command
+from ._base import Text
+from ._description import DescriptionModifyCommand
 
 
 __all__ = (
-    "InterfaceIpAddressCommand",
-    "InterfaceNameCommand",
+    "InterfaceClusterPool",
+    "InterfaceCommand",
+    "InterfaceCommandIpAddressCommand",
+    "InterfaceCommandIpAddressModifyCommand",
+    "InterfaceCommandIpAddressRemoveCommand",
+    "InterfaceCommandNameCommand",
+    "InterfaceCommandNameModifyCommand",
+    "InterfaceCommandNameRemoveCommand",
+    "InterfaceCommandSecurityLevelCommand",
+    "InterfaceCommandSecurityLevelModifyCommand",
+    "InterfaceCommandSecurityLevelRemoveCommand",
+    "InterfaceCommandShutdownCommand",
+    "InterfaceCommandShutdownModifyCommand",
+    "InterfaceCommandShutdownRemoveCommand",
+    "InterfaceCommandVlanCommand",
+    "InterfaceCommandVlanModifyCommand",
+    "InterfaceCommandVlanRemoveCommand",
     "InterfaceReference",
-    "InterfaceSecurityLevelCommand",
-    "PortChannelInterfaceCommand",
-    "StandbyUnit"
+    "InterfaceSecondaryVlans",
+    "InterfaceStandby"
 )
-
-
-def _validate_port_channel(value: str) -> str:
-    if not value.startswith("Port-channel"):
-        raise ValueError
-
-    number = float(value[12:])
-
-    if 1 <= number <= 48:
-        return value
-
-    raise ValueError
 
 
 class InterfaceReference(BaseModel):
@@ -33,37 +37,116 @@ class InterfaceReference(BaseModel):
     name: str
 
 
-class StandbyUnit(BaseModel):
+class InterfaceSecondaryVlans(BaseModel):
+    key: Literal["secondary"] = "secondary"
+    value: Text
+
+
+class InterfaceStandby(BaseModel):
     key: Literal["standby"] = "standby"
     address: IPv4Address
 
 
-class InterfaceIpAddressCommand(Command):
+class InterfaceClusterPool(BaseModel):
+    key: Literal["cluster-pool"] = "cluster-pool"
+    name: str
+
+
+class InterfaceCommandIpAddressCommand(Command):
     key: tuple[Literal["ip"], Literal["address"]] = ("ip", "address")
     address: IPv4Address
     mask: Optional[IPv4Address] = None
-    standby: Optional[StandbyUnit] = None
+    redundancy: Optional[Union[InterfaceStandby, InterfaceClusterPool]] = None
 
 
-class InterfaceNameCommand(Command):
+class InterfaceCommandIpAddressRemoveCommand(Command):
+    key: tuple[Literal["no"], Literal["ip"], Literal["address"]] = (
+        "no",
+        "ip",
+        "address"
+    )
+
+    address: Optional[IPv4Address] = None
+
+
+InterfaceCommandIpAddressModifyCommand = Union[
+    InterfaceCommandIpAddressCommand,
+    InterfaceCommandIpAddressRemoveCommand
+]
+
+
+class InterfaceCommandNameCommand(Command):
     key: Literal["nameif"] = "nameif"
     value: str
 
 
-class InterfaceSecurityLevelCommand(Command):
+class InterfaceCommandNameRemoveCommand(Command):
+    key: tuple[Literal["no"], Literal["nameif"]] = ("no", "nameif")
+
+
+InterfaceCommandNameModifyCommand = Union[
+    InterfaceCommandNameCommand,
+    InterfaceCommandNameRemoveCommand
+]
+
+
+class InterfaceCommandSecurityLevelCommand(Command):
     key: Literal["security-level"] = "security-level"
     value: int
 
 
-class PortChannelInterfaceCommand(Command):
-    key: Literal["interface"] = "interface"
-    type: Annotated[
-        str,
-        AfterValidator(
-            _validate_port_channel
-        )
-    ]
+class InterfaceCommandSecurityLevelRemoveCommand(Command):
+    key: tuple[Literal["no"], Literal["security-level"]] = (
+        "no",
+        "security-level"
+    )
 
-    name: list[InterfaceNameCommand] = []
-    security: list[InterfaceSecurityLevelCommand] = []
-    address: list[InterfaceIpAddressCommand] = []
+
+InterfaceCommandSecurityLevelModifyCommand = Union[
+    InterfaceCommandSecurityLevelCommand,
+    InterfaceCommandSecurityLevelRemoveCommand
+]
+
+
+class InterfaceCommandShutdownCommand(Command):
+    key: Literal["shutdown"] = "shutdown"
+
+
+class InterfaceCommandShutdownRemoveCommand(Command):
+    key: tuple[Literal["no"], Literal["shutdown"]] = ("no", "shutdown")
+
+
+InterfaceCommandShutdownModifyCommand = Union[
+    InterfaceCommandShutdownCommand,
+    InterfaceCommandShutdownRemoveCommand
+]
+
+
+class InterfaceCommandVlanCommand(Command):
+    key: Literal["vlan"] = "vlan"
+    id: int
+    secondary: Optional[InterfaceSecondaryVlans] = None
+
+
+class InterfaceCommandVlanRemoveCommand(Command):
+    key: tuple[Literal["no"], Literal["vlan"]] = ("no", "vlan")
+    id: int
+    secondary: Optional[InterfaceSecondaryVlans] = None
+
+
+InterfaceCommandVlanModifyCommand = Union[
+    InterfaceCommandVlanCommand,
+    InterfaceCommandVlanRemoveCommand
+]
+
+
+class InterfaceCommand(Command):
+    key: Literal["interface"] = "interface"
+    id: str
+
+    name: list[InterfaceCommandNameModifyCommand] = []
+    address: list[InterfaceCommandIpAddressModifyCommand] = []
+    description: list[DescriptionModifyCommand] = []
+    security: list[InterfaceCommandSecurityLevelModifyCommand] = []
+    shutdown: list[InterfaceCommandShutdownModifyCommand] = []
+    vlan: list[InterfaceCommandVlanModifyCommand] = []
