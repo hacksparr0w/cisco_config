@@ -8,7 +8,7 @@ __all__ = (
     "Gt",
     "Lt",
     "Neq",
-    "Op",
+    "Operator",
     "Range"
 )
 
@@ -39,4 +39,4 @@ class Range(BaseModel):
     stop: int
 
 
-Op = Union[Eq, Gt, Lt, Neq, Range]
+type Operator = Union[Eq, Gt, Lt, Neq, Range]

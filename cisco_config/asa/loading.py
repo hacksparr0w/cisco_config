@@ -1,22 +1,16 @@
 import importlib
 
 from io import TextIOBase
-from typing import Generator
+from typing import Iterator
 
 from ..command import Command
 from ..loading import load as _load
 
-from .common import (
-    EntityRegistry,
-    SimpleEntityRegistry,
-    ObjectCommand,
-    ObjectGroupCommand
-)
+from .common import ObjectCommand, ObjectGroupCommand, SimpleEntityRegistry
 
 
 __all__ = (
     "load",
-    "Loader"
 )
 
 
@@ -41,18 +35,16 @@ def load(
     version: str,
     source: TextIOBase,
     strict: bool = False
-) -> Generator[Command, None, EntityRegistry]:
-    entity_registry = SimpleEntityRegistry()
-    context = {"entity_registry": entity_registry}
+) -> Iterator[Command]:
+    registry = SimpleEntityRegistry()
+    context = {"entity_registry": registry}
     hints = _import_hints(version)
     commands = _load(hints, source, strict=strict, context=context)
 
     for command in commands:
         if isinstance(command, ObjectCommand):
-            entity_registry.register_object(command)
+            registry.register_object(command)
         elif isinstance(command, ObjectGroupCommand):
-            entity_registry.register_object_group(command)
+            registry.register_object_group(command)
 
         yield command
-
-    return entity_registry

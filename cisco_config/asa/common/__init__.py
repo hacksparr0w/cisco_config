@@ -20,7 +20,7 @@ from . import (
     _object_group,
     _object_group_reference,
     _object_reference,
-    _op,
+    _operator,
     _security_group,
     _security_group_reference,
     _subnet,
@@ -52,7 +52,7 @@ from ._object import *
 from ._object_group import *
 from ._object_group_reference import *
 from ._object_reference import *
-from ._op import *
+from ._operator import *
 from ._security_group import *
 from ._security_group_reference import *
 from ._subnet import *
@@ -84,7 +84,7 @@ __all__ = (
     _object_group.__all__ +
     _object_group_reference.__all__ +
     _object_reference.__all__ +
-    _op.__all__ +
+    _operator.__all__ +
     _security_group.__all__ +
     _security_group_reference.__all__ +
     _subnet.__all__ +

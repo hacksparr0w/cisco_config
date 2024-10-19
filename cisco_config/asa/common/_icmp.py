@@ -10,7 +10,7 @@ __all__ = (
 
 
 type IcmpType = Union[
-    Literal["echo"],
+    Literal["echo", "echo-reply"],
     int
 ]
 

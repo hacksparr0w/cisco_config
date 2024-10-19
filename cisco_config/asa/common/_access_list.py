@@ -20,6 +20,7 @@ from ._object_group_reference import (
 )
 
 from ._object_reference import ObjectReference
+from ._operator import Operator
 from ._security_group_reference import SecurityGroupReference
 from ._subnet import IPv4Subnet
 from ._time_range_reference import TimeRangeReference
@@ -29,11 +30,13 @@ from ._user_reference import UserReference
 
 __all__ = (
     "AccessListIcmpOptions",
+    "AccessListPort",
     "AccessListRemarkCommand",
     "AccessListSecurityGroup",
     "AccessListTarget",
     "AccessListUser",
-    "ExtendedIcmpAccessListCommand"
+    "ExtendedIcmpAccessListCommand",
+    "ExtendedPortbasedAccessListCommand"
 )
 
 
@@ -82,6 +85,17 @@ type AccessListIcmpOptions = Union[
 ]
 
 
+type AccessListPort = Union[
+    Operator,
+    Annotated[
+        ObjectGroupReference,
+        AfterValidator(
+            validate_object_group_type(ObjectGroupType.SERVICE)
+        )
+    ]
+]
+
+
 class AccessListRemarkCommand(Command):
     key: Literal["access-list"] = "access-list"
     name: str
@@ -103,6 +117,25 @@ class ExtendedIcmpAccessListCommand(Command):
     destination_security_group: Optional[AccessListSecurityGroup] = None
     destination: AccessListTarget
     options: Optional[AccessListIcmpOptions] = None
+    log: Optional[Log] = None
+    time: Optional[TimeRangeReference] = None
+    inactive: Optional[Literal["inactive"]] = None
+
+
+class ExtendedPortbasedAccessListCommand(Command):
+    key: Literal["access-list"] = "access-list"
+    name: str
+    line: Optional[Line] = None
+    type: Literal["extended"] = "extended"
+    action: Literal["deny", "permit"]
+    protocol: Literal["tcp", "udp", "sctp"]
+    user: Optional[AccessListUser] = None
+    source_security_group: Optional[AccessListSecurityGroup] = None
+    source: AccessListTarget
+    source_port: Optional[AccessListPort] = None
+    destination_security_group: Optional[AccessListSecurityGroup] = None
+    destination: AccessListTarget
+    destination_port: Optional[AccessListPort] = None
     log: Optional[Log] = None
     time: Optional[TimeRangeReference] = None
     inactive: Optional[Literal["inactive"]] = None

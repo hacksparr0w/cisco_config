@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from ...command import Command
 from ._icmp import IcmpOptions
 from ._object_reference import ObjectReference
-from ._op import Op
+from ._operator import Operator
 
 
 __all__ = (
@@ -46,12 +46,12 @@ class ObjectGroupIcmpService(BaseModel):
 
 class ObjectGroupL4ServiceSource(BaseModel):
     key: Literal["source"] = "source"
-    value: Op
+    value: Operator
 
 
 class ObjectGroupL4ServiceDestination(BaseModel):
     key: Literal["destination"] = "destination"
-    value: Op
+    value: Operator
 
 
 class ObjectGroupL4Service(BaseModel):
