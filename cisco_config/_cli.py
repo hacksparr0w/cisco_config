@@ -11,7 +11,7 @@ from pydantic import TypeAdapter
 from .command import Command
 
 
-def _get_loader(format: str) -> Callable[..., Iterator[Command]]:
+def _import_loader(format: str) -> Callable[..., Iterator[Command]]:
     name, version = format.split("/")
     module = importlib.import_module(f".{name}", __package__)
 
@@ -38,13 +38,18 @@ def cli() -> None:
     default="asa/v9.20",
     help="Cisco configuration format"
 )
-def load(source: TextIOBase, format: str) -> None:
+@click.option(
+    "--strict",
+    is_flag=True,
+    default=False
+)
+def load(source: TextIOBase, format: str, strict: bool) -> None:
     """
     Loads a Cisco configuration and prints the parsed commands as JSON
     """
 
-    loader = _get_loader(format)
-    commands = list(loader(source, strict=False))
+    loader = _import_loader(format)
+    commands = list(loader(source, strict=strict))
     data = TypeAdapter(list[Any]).dump_json(commands, indent=2)
 
     click.echo(data)

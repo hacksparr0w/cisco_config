@@ -37,10 +37,11 @@ def _import_hints(version: str) -> tuple[type[Command], ...]:
     return hints
 
 
-Loader = Generator[Command, None, EntityRegistry]
-
-
-def load(version: str, source: TextIOBase, strict: bool = False) -> Loader:
+def load(
+    version: str,
+    source: TextIOBase,
+    strict: bool = False
+) -> Generator[Command, None, EntityRegistry]:
     entity_registry = SimpleEntityRegistry()
     context = {"entity_registry": entity_registry}
     hints = _import_hints(version)
