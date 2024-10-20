@@ -9,9 +9,11 @@ from pydantic_core.core_schema import WithInfoValidatorFunction
 from ._base import Named
 from ._object import NetworkObjectCommand, Object, ObjectCommand, ObjectType
 from ._object_group import (
+    NetworkObjectGroupCommand,
     ObjectGroup,
     ObjectGroupCommand,
     ObjectGroupType,
+    ProtocolObjectGroupCommand,
     ServiceObjectGroupCommand
 )
 
@@ -92,6 +94,10 @@ class SimpleEntityRegistry(EntityRegistry):
     @staticmethod
     def create_object_group(command: ObjectGroupCommand) -> ObjectGroup:
         match command:
+            case NetworkObjectGroupCommand(name=name):
+                return ObjectGroup(type=ObjectGroupType.NETWORK, name=name)
+            case ProtocolObjectGroupCommand(name=name):
+                return ObjectGroup(type=ObjectGroupType.PROTOCOL, name=name)
             case ServiceObjectGroupCommand(name=name):
                 return ObjectGroup(type=ObjectGroupType.SERVICE, name=name)
             case _:

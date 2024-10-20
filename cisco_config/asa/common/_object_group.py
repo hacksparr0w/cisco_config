@@ -5,9 +5,11 @@ from pydantic import BaseModel
 
 from ...command import Command
 from ._base import Key
+from ._host import Host
 from ._icmp import IcmpOptions
 from ._object import ObjectReference
 from ._operator import Operator
+from ._subnet import Ipv4Subnet
 
 
 __all__ = (
@@ -15,9 +17,17 @@ __all__ = (
     "L4Service",
     "L4ServiceDestination",
     "L4ServiceSource",
+    "NetworkObjectGroupCommand",
+    "NetworkObjectGroupTarget",
     "NetworkServiceObjectGroupReference",
     "ObjectGroup",
     "ObjectGroupCommand",
+    "ObjectGroupNetworkObjectCommand",
+    "ObjectGroupNetworkObjectModifyCommand",
+    "ObjectGroupNetworkObjectRemoveCommand",
+    "ObjectGroupProtocolObjectCommand",
+    "ObjectGroupProtocolObjectModifyCommand",
+    "ObjectGroupProtocolObjectRemoveCommand",
     "ObjectGroupReference",
     "ObjectGroupSearchCommand",
     "ObjectGroupSearchRemoveCommand",
@@ -25,10 +35,10 @@ __all__ = (
     "ObjectGroupServiceObjectModifyCommand",
     "ObjectGroupServiceObjectRemoveCommand",
     "ObjectGroupType",
-    "Protocol",
+    "ProtocolObjectGroupCommand",
     "SecurityObjectGroupReference",
-    "Service",
     "ServiceObjectGroupCommand",
+    "ServiceObjectGroupTarget",
     "UserObjectGroupReference"
 )
 
@@ -69,14 +79,18 @@ class L4Service(BaseModel):
     destination: Optional[L4ServiceDestination] = None
 
 
-type Protocol = str
-
-
-type Service = Union[
+type ServiceObjectGroupTarget = Union[
     L4Service,
     IcmpService,
     ObjectReference,
-    Protocol
+    str
+]
+
+
+type NetworkObjectGroupTarget = Union[
+    Host,
+    Ipv4Subnet,
+    ObjectReference
 ]
 
 
@@ -98,13 +112,61 @@ class ObjectGroupSearchRemoveCommand(Command):
     type: Union[Literal["access-control"], Literal["threshold"]]
 
 
+class ObjectGroupNetworkObjectCommand(Command):
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/I-R/asa-command-ref-I-R/n-commands.html#wp1090353681
+    """
+
+    key: Key["network-object"]
+    target: NetworkObjectGroupTarget
+
+
+class ObjectGroupNetworkObjectRemoveCommand(Command):
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/I-R/asa-command-ref-I-R/n-commands.html#wp1090353681
+    """
+
+    key: Key["no", "network-object"]
+    target: NetworkObjectGroupTarget
+
+
+ObjectGroupNetworkObjectModifyCommand = Union[
+    ObjectGroupNetworkObjectCommand,
+    ObjectGroupNetworkObjectRemoveCommand
+]
+
+
+class ObjectGroupProtocolObjectCommand(Command):
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/I-R/asa-command-ref-I-R/pr-pz-commands.html#wp2367535905
+    """
+
+    key: Key["protocol-object"]
+    target: str
+
+
+class ObjectGroupProtocolObjectRemoveCommand(Command):
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/I-R/asa-command-ref-I-R/po-pq-commands.html#wp7375925520
+    """
+
+    key: Key["no", "protocol-object"]
+    target: str
+
+
+ObjectGroupProtocolObjectModifyCommand = Union[
+    ObjectGroupProtocolObjectCommand,
+    ObjectGroupProtocolObjectRemoveCommand
+]
+
+
 class ObjectGroupServiceObjectCommand(Command):
     """
     See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/S/asa-command-ref-S/sa-shov-commands.html#wp6965078880
     """
 
     key: Key["service-object"]
-    service: Service
+    target: ServiceObjectGroupTarget
 
 
 class ObjectGroupServiceObjectRemoveCommand(Command):
@@ -113,7 +175,7 @@ class ObjectGroupServiceObjectRemoveCommand(Command):
     """
 
     key: Key["no", "service-object"]
-    service: Service
+    target: ServiceObjectGroupTarget
 
 
 ObjectGroupServiceObjectModifyCommand = Union[
@@ -122,14 +184,41 @@ ObjectGroupServiceObjectModifyCommand = Union[
 ]
 
 
+class NetworkObjectGroupCommand(Command):
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/I-R/asa-command-ref-I-R/o-commands.html#wp4279334402
+    """
+
+    key: Key["object-group", "network"]
+    name: str
+    children: list[ObjectGroupNetworkObjectModifyCommand] = []
+
+
+class ProtocolObjectGroupCommand(Command):
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/I-R/asa-command-ref-I-R/o-commands.html#wp4279334402
+    """
+
+    key: Key["object-group", "protocol"]
+    name: str
+    children: list[ObjectGroupProtocolObjectModifyCommand] = []
+
+
 class ServiceObjectGroupCommand(Command):
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/I-R/asa-command-ref-I-R/o-commands.html#wp4279334402
+    """
+
     key: Key["object-group", "service"]
     name: str
     protocol: Optional[Literal["tcp", "udp", "tcp-udp"]] = None
     children: list[ObjectGroupServiceObjectModifyCommand] = []
 
 
-ObjectGroupCommand = ServiceObjectGroupCommand
+ObjectGroupCommand = Union[
+    NetworkObjectGroupCommand,
+    ServiceObjectGroupCommand
+]
 
 
 class ObjectGroupReference(BaseModel):

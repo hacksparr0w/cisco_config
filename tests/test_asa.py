@@ -12,6 +12,9 @@ from cisco_config.asa.common import (
     BannerCommand,
     DescriptionCommand,
     EnablePasswordCommand,
+    Eq,
+    Gt,
+    Host,
     HostnameCommand,
     InterfaceCommand,
     InterfaceShutdownCommand,
@@ -19,14 +22,24 @@ from cisco_config.asa.common import (
     IpAddressCommand,
     IpAddressRemoveCommand,
     Ipv4Subnet,
+    L4Service,
+    L4ServiceDestination,
+    L4ServiceSource,
     ManagementOnlyCommand,
     NameifCommand,
     NameifRemoveCommand,
     NamesCommand,
     NetworkObjectCommand,
+    NetworkObjectGroupCommand,
+    ObjectGroupNetworkObjectCommand,
+    ObjectGroupProtocolObjectCommand,
+    ObjectGroupServiceObjectCommand,
+    ObjectReference,
     PassiveFtpModeCommand,
+    ProtocolObjectGroupCommand,
     SecurityLevelCommand,
     SecurityLevelRemoveCommand,
+    ServiceObjectGroupCommand,
     SubnetCommand,
     Text
 )
@@ -337,6 +350,98 @@ from cisco_config.asa.common import (
                                 mask=Ipv4Address("255.255.0.0")
                             )
                         )
+                    ]
+                ),
+                NetworkObjectGroupCommand(
+                    name="VPN_Test2",
+                    children=[
+                        ObjectGroupNetworkObjectCommand(
+                            target=ObjectReference(name="NET_192.169.0.0_16")
+                        ),
+                        ObjectGroupNetworkObjectCommand(
+                            target=ObjectReference(name="NET_192.170.0.0_16")
+                        ),
+                        ObjectGroupNetworkObjectCommand(
+                            target=ObjectReference(name="NET_192.171.0.0_16")
+                        ),
+                        ObjectGroupNetworkObjectCommand(
+                            target=ObjectReference(name="NET_192.172.0.0_16")
+                        ),
+                        ObjectGroupNetworkObjectCommand(
+                            target=ObjectReference(name="NET_192.173.0.0_16")
+                        ),
+                        ObjectGroupNetworkObjectCommand(
+                            target=ObjectReference(name="NET_Testing01")
+                        ),
+                        ObjectGroupNetworkObjectCommand(
+                            target=ObjectReference(
+                                name="NET_ThisIsReal_Network_For_VS"
+                            )
+                        )
+                    ]
+                ),
+                NetworkObjectGroupCommand(
+                    name="VPN_Shared_Infra",
+                    children=[
+                        ObjectGroupNetworkObjectCommand(
+                            target=ObjectReference(name="NET_192.176.0.0_16")
+                        ),
+                        ObjectGroupNetworkObjectCommand(
+                            target=ObjectReference(name="NET_192.177.0.0_16")
+                        )
+                    ]
+                ),
+                NetworkObjectGroupCommand(
+                    name="GRP01",
+                    children=[
+                        ObjectGroupNetworkObjectCommand(
+                            target=Host(value=Ipv4Address("172.16.69.101"))
+                        ),
+                        ObjectGroupNetworkObjectCommand(
+                            target=Host(value=Ipv4Address("172.16.69.17"))
+                        )
+                    ]
+                ),
+                NetworkObjectGroupCommand(
+                    name="GRP02",
+                    children=[
+                        ObjectGroupNetworkObjectCommand(
+                            target=Host(value=Ipv4Address("172.17.34.117"))
+                        ),
+                        ObjectGroupNetworkObjectCommand(
+                            target=Host(value=Ipv4Address("172.17.34.118"))
+                        )
+                    ]
+                ),
+                ServiceObjectGroupCommand(
+                    name="MGMT01",
+                    children=[
+                        ObjectGroupServiceObjectCommand(
+                            target=L4Service(
+                                protocol="tcp",
+                                source=L4ServiceSource(
+                                    value=Gt(value="1024")
+                                ),
+                                destination=L4ServiceDestination(
+                                    value=Eq(value="ssh")
+                                )
+                            )
+                        ),
+                        ObjectGroupServiceObjectCommand(
+                            target=L4Service(
+                                protocol="udp",
+                                destination=L4ServiceDestination(
+                                    value=Eq(value="domain")
+                                )
+                            )
+                        )
+                    ]
+                ),
+                ProtocolObjectGroupCommand(
+                    name="PROTO01",
+                    children=[
+                        ObjectGroupProtocolObjectCommand(target="tcp"),
+                        ObjectGroupProtocolObjectCommand(target="udp")
                     ]
                 )
             ]
