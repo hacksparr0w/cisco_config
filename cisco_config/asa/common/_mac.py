@@ -6,8 +6,8 @@ from ...command import Command
 
 
 __all__ = (
-    "AutoMacAddressCommand",
-    "AutoMacAddressRemoveCommand",
+    "MacAddressAutoCommand",
+    "MacAddressAutoRemoveCommand",
     "MacAddressPrefix"
 )
 
@@ -17,7 +17,7 @@ class MacAddressPrefix(BaseModel):
     prefix: int
 
 
-class AutoMacAddressCommand(Command):
+class MacAddressAutoCommand(Command):
     key: tuple[Literal["mac-address"], Literal["auto"]] = (
         "mac-address",
         "auto"
@@ -26,7 +26,7 @@ class AutoMacAddressCommand(Command):
     prefix: Optional[MacAddressPrefix] = None
 
 
-class AutoMacAddressRemoveCommand(Command):
+class MacAddressAutoRemoveCommand(Command):
     key: tuple[Literal["no"], Literal["mac-address"], Literal["auto"]] = (
         "no",
         "mac-address",

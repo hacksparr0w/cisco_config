@@ -7,7 +7,7 @@ from pydantic import ValidationInfo
 from pydantic_core.core_schema import WithInfoValidatorFunction
 
 from ._base import Named
-from ._object import NetworkObjectCommand, Object, ObjectCommand, ObjectType
+from ._object import ObjectNetworkCommand, Object, ObjectCommand, ObjectType
 from ._object_group import (
     ObjectGroup,
     ObjectGroupCommand,
@@ -84,7 +84,7 @@ class SimpleEntityRegistry(EntityRegistry):
     @staticmethod
     def create_object(command: ObjectCommand) -> Object:
         match command:
-            case NetworkObjectCommand(name=name):
+            case ObjectNetworkCommand(name=name):
                 return Object(type=ObjectType.NETWORK, name=name)
             case _:
                 raise TypeError

@@ -1,22 +1,26 @@
 from enum import StrEnum
-from typing import Literal, Optional, Union
+from ipaddress import IPv4Address
+from typing import Literal, Union
 
 from pydantic import BaseModel
 
 from ...command import Command
-from ._base import Text
-from ._host import Host
+from ._description import DescriptionModifyCommand
 from ._subnet import IPv4Subnet
 
 
 __all__ = (
-    "NetworkObjectCommand",
     "Object",
     "ObjectCommand",
-    "ObjectDescriptionCommand",
-    "ObjectHostCommand",
+    "ObjectNetworkCommand",
+    "ObjectNetworkCommandHostCommand",
+    "ObjectNetworkCommandHostModifyCommand",
+    "ObjectNetworkCommandHostRemoveCommand",
+    "ObjectNetworkCommandSubnetCommand",
+    "ObjectNetworkCommandSubnetModifyCommand",
+    "ObjectNetworkCommandSubnetRemoveCommand",
+    "ObjectNetworkCommandTargetCommand",
     "ObjectReference",
-    "ObjectSubnetCommand",
     "ObjectType"
 )
 
@@ -32,30 +36,53 @@ class Object(BaseModel):
     name: str
 
 
-class ObjectDescriptionCommand(Command):
-    key: Literal["description"] = "description"
-    value: Text
-
-
-class ObjectHostCommand(Host, Command):
-    pass
-
-
-class ObjectSubnetCommand(Command):
+class ObjectNetworkCommandSubnetCommand(Command):
     key: Literal["subnet"] = "subnet"
     value: IPv4Subnet
-    service: Optional[str] = None
 
 
-class NetworkObjectCommand(Command):
+class ObjectNetworkCommandSubnetRemoveCommand(Command):
+    key: tuple[Literal["no"], Literal["subnet"]] = ("no", "subnet")
+    value: IPv4Subnet
+
+
+ObjectNetworkCommandSubnetModifyCommand = Union[
+    ObjectNetworkCommandSubnetCommand,
+    ObjectNetworkCommandSubnetRemoveCommand
+]
+
+
+class ObjectNetworkCommandHostCommand(Command):
+    key: Literal["host"] = "host"
+    value: IPv4Address
+
+
+class ObjectNetworkCommandHostRemoveCommand(Command):
+    key: tuple[Literal["no"], Literal["host"]] = ("no", "host")
+    value: IPv4Address
+
+
+ObjectNetworkCommandHostModifyCommand = Union[
+    ObjectNetworkCommandHostCommand,
+    ObjectNetworkCommandHostRemoveCommand
+]
+
+
+ObjectNetworkCommandTargetCommand = Union[
+    ObjectNetworkCommandSubnetModifyCommand,
+    ObjectNetworkCommandHostModifyCommand
+]
+
+
+class ObjectNetworkCommand(Command):
     key: tuple[Literal["object"], Literal["network"]] = ("object", "network")
     name: str
 
-    target: list[Union[ObjectHostCommand, ObjectSubnetCommand]] = []
-    description: list[ObjectDescriptionCommand] = []
+    target: list[ObjectNetworkCommandTargetCommand] = []
+    description: list[DescriptionModifyCommand] = []
 
 
-ObjectCommand = NetworkObjectCommand
+ObjectCommand = ObjectNetworkCommand
 
 
 class ObjectReference(BaseModel):

@@ -8,6 +8,7 @@ from . import (
     _dns,
     _domain_name,
     _entity,
+    _ftp,
     _host,
     _hostname,
     _icmp,
@@ -35,6 +36,7 @@ from ._description import *
 from ._dns import *
 from ._domain_name import *
 from ._entity import *
+from ._ftp import *
 from ._host import *
 from ._hostname import *
 from ._icmp import *
@@ -63,6 +65,7 @@ __all__ = (
     _dns.__all__ +
     _domain_name.__all__ +
     _entity.__all__ +
+    _ftp.__all__ +
     _host.__all__ +
     _hostname.__all__ +
     _icmp.__all__ +

@@ -14,6 +14,9 @@ __all__ = (
     "InterfaceCommandIpAddressCommand",
     "InterfaceCommandIpAddressModifyCommand",
     "InterfaceCommandIpAddressRemoveCommand",
+    "InterfaceCommandManagementOnlyCommand",
+    "InterfaceCommandManagementOnlyModifyCommand",
+    "InterfaceCommandManagementOnlyRemoveCommand",
     "InterfaceCommandNameCommand",
     "InterfaceCommandNameModifyCommand",
     "InterfaceCommandNameRemoveCommand",
@@ -140,13 +143,34 @@ InterfaceCommandVlanModifyCommand = Union[
 ]
 
 
+class InterfaceCommandManagementOnlyCommand(Command):
+    key: Literal["management-only"] = "management-only"
+    individual: Optional[Literal["individual"]] = None
+
+
+class InterfaceCommandManagementOnlyRemoveCommand(Command):
+    key: tuple[Literal["no"], Literal["management-only"]] = (
+        "no",
+        "management-only"
+    )
+
+    individual: Optional[Literal["individual"]] = None
+
+
+InterfaceCommandManagementOnlyModifyCommand = Union[
+    InterfaceCommandManagementOnlyCommand,
+    InterfaceCommandManagementOnlyRemoveCommand
+]
+
+
 class InterfaceCommand(Command):
     key: Literal["interface"] = "interface"
     id: str
 
     name: list[InterfaceCommandNameModifyCommand] = []
-    address: list[InterfaceCommandIpAddressModifyCommand] = []
     description: list[DescriptionModifyCommand] = []
+    address: list[InterfaceCommandIpAddressModifyCommand] = []
+    management: list[InterfaceCommandManagementOnlyModifyCommand] = []
     security: list[InterfaceCommandSecurityLevelModifyCommand] = []
     shutdown: list[InterfaceCommandShutdownModifyCommand] = []
     vlan: list[InterfaceCommandVlanModifyCommand] = []
