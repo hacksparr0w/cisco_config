@@ -42,27 +42,6 @@ __all__ = (
 )
 
 
-class AccessListLine(BaseModel):
-    key: Literal["line"] = "line"
-    number: int
-
-
-class AccessListLogInterval(BaseModel):
-    key: Literal["interval"] = "interval"
-    seconds: int
-
-
-class AccessListLogOptions(BaseModel):
-    level: Optional[int] = None
-    interval: Optional[AccessListLogInterval] = None
-
-
-class AccessListLog(BaseModel):
-    key: Literal["log"] = "log"
-    options: Union[Literal["disable", "default"], AccessListLogOptions] = \
-        AccessListLogOptions()
-
-
 type AccessListTarget = Union[
     Host,
     IPv4Subnet,

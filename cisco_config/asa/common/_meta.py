@@ -1,6 +1,7 @@
 from typing import Literal, Optional
 
 from ...command import Command
+from ._base import Key
 
 
 __all__ = (
@@ -9,7 +10,7 @@ __all__ = (
 
 
 class AsaVersionCommand(Command):
-    key: Literal["ASA"] = "ASA"
+    key: Key["ASA"]
     type: Literal["Version"] = "Version"
     value: str
     environment: Optional[str] = None

@@ -1,6 +1,6 @@
-from typing import Literal
-
 from pydantic import BaseModel
+
+from ._base import Key
 
 
 __all__ = (
@@ -9,5 +9,5 @@ __all__ = (
 
 
 class TimeRangeReference(BaseModel):
-    key: Literal["time-range"] = "time-range"
+    key: Key["time-range"]
     name: str

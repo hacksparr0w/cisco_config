@@ -1,7 +1,7 @@
-from typing import Literal, Union
+from typing import Union
 
 from ...command import Command
-from ._base import Text
+from ._base import Key, Text
 
 
 __all__ = (
@@ -12,12 +12,20 @@ __all__ = (
 
 
 class DescriptionCommand(Command):
-    key: Literal["description"] = "description"
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/A-H/asa-command-ref-A-H/m_da-dg.html#wp4232208511
+    """
+
+    key: Key["description"]
     value: Text
 
 
 class DescriptionRemoveCommand(Command):
-    key: tuple[Literal["no"], Literal["description"]] = ("no", "description")
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/A-H/asa-command-ref-A-H/m_da-dg.html#wp4232208511
+    """
+
+    key: Key["no", "description"]
 
 
 DescriptionModifyCommand = Union[DescriptionCommand, DescriptionRemoveCommand]

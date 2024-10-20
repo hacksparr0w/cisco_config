@@ -1,6 +1,8 @@
-from typing import Literal, Union
+from typing import Union
 
 from pydantic import BaseModel
+
+from ._base import Key
 
 
 __all__ = (
@@ -14,27 +16,27 @@ __all__ = (
 
 
 class Eq(BaseModel):
-    key: Literal["eq"] = "eq"
+    key: Key["eq"]
     value: str
 
 
 class Gt(BaseModel):
-    key: Literal["gt"] = "gt"
+    key: Key["gt"]
     value: str
 
 
 class Lt(BaseModel):
-    key: Literal["lt"] = "lt"
+    key: Key["lt"]
     value: str
 
 
 class Neq(BaseModel):
-    key: Literal["neq"] = "neq"
+    key: Key["neq"]
     value: str
 
 
 class Range(BaseModel):
-    key: Literal["range"] = "range"
+    key: Key["range"]
     start: int
     stop: int
 

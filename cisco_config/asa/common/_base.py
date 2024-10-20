@@ -1,6 +1,6 @@
-from typing import Optional, Self
+from typing import _SpecialForm, Annotated, Literal, Optional, Self
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from ...deserialization import (
     Context,
@@ -15,9 +15,21 @@ from ...token import Eol, Word
 
 __all__ = (
     "Data",
+    "Key",
     "Named",
     "Text"
 )
+
+
+@_SpecialForm
+def Key(self, parameters):
+    if not isinstance(parameters, tuple):
+        parameters = (parameters,)
+
+    return Annotated[
+        tuple[tuple(Literal[parameter] for parameter in parameters)],
+        Field(default=tuple(parameters))
+    ]
 
 
 class Named:

@@ -1,37 +1,42 @@
-from typing import Literal, Union
+from typing import Union
 
 from pydantic import BaseModel
 
 from ...command import Command
+from ._base import Key
+from ._name import Name
+from ._tag import Tag
 
 
 __all__ = (
-    "SecurityGroup",
     "SecurityGroupCommand",
-    "SecurityGroupName",
     "SecurityGroupReference",
-    "SecurityGroupTag"
+    "SecurityGroupRemoveCommand",
+    "SecurityGroupTarget"
 )
 
 
-class SecurityGroupTag(BaseModel):
-    key: Literal["tag"] = "tag"
-    value: str
+type SecurityGroupTarget = Union[Name, Tag]
 
 
-class SecurityGroupName(BaseModel):
-    key: Literal["name"] = "name"
-    value: str
+class SecurityGroupReference(BaseModel):
+    key: Key["security-group"]
+    target: SecurityGroupTarget
 
 
-class SecurityGroup(BaseModel):
-    key: Literal["security-group"] = "security-group"
-    target: Union[SecurityGroupName, SecurityGroupTag]
+class SecurityGroupCommand(Command):
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/S/asa-command-ref-S/sa-shov-commands.html#wp2301402396
+    """
+
+    key: Key["security-group"]
+    target: SecurityGroupTarget
 
 
-class SecurityGroupCommand(SecurityGroup, Command):
-    pass
+class SecurityGroupRemoveCommand(Command):
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/S/asa-command-ref-S/sa-shov-commands.html#wp2301402396
+    """
 
-
-class SecurityGroupReference(SecurityGroup):
-    pass
+    key: Key["no", "security-group"]
+    target: SecurityGroupTarget

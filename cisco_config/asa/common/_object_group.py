@@ -4,27 +4,32 @@ from typing import Literal, Optional, Union
 from pydantic import BaseModel
 
 from ...command import Command
+from ._base import Key
 from ._icmp import IcmpOptions
 from ._object import ObjectReference
 from ._operator import Operator
 
 
 __all__ = (
+    "IcmpService",
+    "L4Service",
+    "L4ServiceDestination",
+    "L4ServiceSource",
     "NetworkServiceObjectGroupReference",
     "ObjectGroup",
     "ObjectGroupCommand",
-    "ObjectGroupIcmpService",
-    "ObjectGroupL4Service",
-    "ObjectGroupL4ServiceDestination",
-    "ObjectGroupL4ServiceSource",
     "ObjectGroupReference",
     "ObjectGroupSearchCommand",
-    "ObjectGroupService",
+    "ObjectGroupSearchRemoveCommand",
+    "ObjectGroupServiceObjectCommand",
+    "ObjectGroupServiceObjectModifyCommand",
+    "ObjectGroupServiceObjectRemoveCommand",
     "ObjectGroupType",
-    "ServiceObjectGroupCommand",
-    "ServiceObjectGroupServiceObjectCommand",
+    "Protocol",
     "SecurityObjectGroupReference",
-    "UserObjectGroupReference",
+    "Service",
+    "ServiceObjectGroupCommand",
+    "UserObjectGroupReference"
 )
 
 
@@ -43,77 +48,105 @@ class ObjectGroup(BaseModel):
     type: ObjectGroupType
 
 
-class ObjectGroupIcmpService(BaseModel):
+class IcmpService(BaseModel):
     key: Literal["icmp", "icmp6"]
     options: Optional[IcmpOptions] = None
 
 
-class ObjectGroupL4ServiceSource(BaseModel):
+class L4ServiceSource(BaseModel):
     key: Literal["source"] = "source"
     value: Operator
 
 
-class ObjectGroupL4ServiceDestination(BaseModel):
+class L4ServiceDestination(BaseModel):
     key: Literal["destination"] = "destination"
     value: Operator
 
 
-class ObjectGroupL4Service(BaseModel):
+class L4Service(BaseModel):
     protocol: Literal["tcp", "udp", "tcp-udp", "sctp"]
-    source: Optional[ObjectGroupL4ServiceSource] = None
-    destination: Optional[ObjectGroupL4ServiceDestination] = None
+    source: Optional[L4ServiceSource] = None
+    destination: Optional[L4ServiceDestination] = None
 
 
-type ObjectGroupService = Union[
-    ObjectGroupL4Service,
-    ObjectGroupIcmpService,
+type Protocol = str
+
+
+type Service = Union[
+    L4Service,
+    IcmpService,
     ObjectReference,
-    str
+    Protocol
 ]
 
 
 class ObjectGroupSearchCommand(Command):
-    no: Optional[Literal["no"]] = None
-    key: Literal["object-group-search"] = "object-group-search"
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/I-R/asa-command-ref-I-R/o-commands.html#wp1852298285
+    """
+
+    key: Key["object-group-search"]
     type: Union[Literal["access-control"], Literal["threshold"]]
 
 
-class ServiceObjectGroupServiceObjectCommand(Command):
-    key: Literal["service-object"] = "service-object"
-    service: ObjectGroupService
+class ObjectGroupSearchRemoveCommand(Command):
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/I-R/asa-command-ref-I-R/o-commands.html#wp1852298285
+    """
+
+    key: Key["no", "object-group-search"]
+    type: Union[Literal["access-control"], Literal["threshold"]]
+
+
+class ObjectGroupServiceObjectCommand(Command):
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/S/asa-command-ref-S/sa-shov-commands.html#wp6965078880
+    """
+
+    key: Key["service-object"]
+    service: Service
+
+
+class ObjectGroupServiceObjectRemoveCommand(Command):
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/S/asa-command-ref-S/sa-shov-commands.html#wp6965078880
+    """
+
+    key: Key["no", "service-object"]
+    service: Service
+
+
+ObjectGroupServiceObjectModifyCommand = Union[
+    ObjectGroupServiceObjectCommand,
+    ObjectGroupServiceObjectRemoveCommand
+]
 
 
 class ServiceObjectGroupCommand(Command):
-    key: tuple[Literal["object-group"], Literal["service"]] = (
-        "object-group",
-        "service"
-    )
-
+    key: Key["object-group", "service"]
     name: str
     protocol: Optional[Literal["tcp", "udp", "tcp-udp"]] = None
-    objects: list[ServiceObjectGroupServiceObjectCommand]
+    children: list[ObjectGroupServiceObjectModifyCommand] = []
 
 
 ObjectGroupCommand = ServiceObjectGroupCommand
 
 
 class ObjectGroupReference(BaseModel):
-    key: Literal["object-group"] = "object-group"
+    key: Key["object-group"]
     name: str
 
 
 class NetworkServiceObjectGroupReference(BaseModel):
-    key: Literal["object-group-network-service"] = \
-        "object-group-network-service"
-
+    key: Key["object-group-network-service"]
     name: str
 
 
 class SecurityObjectGroupReference(BaseModel):
-    key: Literal["object-group-security"] = "object-group-security"
+    key: Key["object-group-security"]
     name: str
 
 
 class UserObjectGroupReference(BaseModel):
-    key: Literal["object-group-user"] = "object-group-user"
+    key: Key["object-group-user"]
     name: str

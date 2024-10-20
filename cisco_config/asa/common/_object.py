@@ -1,25 +1,23 @@
 from enum import StrEnum
 from ipaddress import IPv4Address
-from typing import Literal, Union
+from typing import Union
 
 from pydantic import BaseModel
 
 from ...command import Command
+from ._base import Key
 from ._description import DescriptionModifyCommand
-from ._subnet import IPv4Subnet
+from ._subnet import SubnetModifyCommand
 
 
 __all__ = (
+    "NetworkObjectCommand",
+    "NetworkObjectHostCommand",
+    "NetworkObjectHostModifyCommand",
+    "NetworkObjectHostRemoveCommand",
+    "NetworkObjectTargetCommand",
     "Object",
     "ObjectCommand",
-    "ObjectNetworkCommand",
-    "ObjectNetworkCommandHostCommand",
-    "ObjectNetworkCommandHostModifyCommand",
-    "ObjectNetworkCommandHostRemoveCommand",
-    "ObjectNetworkCommandSubnetCommand",
-    "ObjectNetworkCommandSubnetModifyCommand",
-    "ObjectNetworkCommandSubnetRemoveCommand",
-    "ObjectNetworkCommandTargetCommand",
     "ObjectReference",
     "ObjectType"
 )
@@ -36,55 +34,47 @@ class Object(BaseModel):
     name: str
 
 
-class ObjectNetworkCommandSubnetCommand(Command):
-    key: Literal["subnet"] = "subnet"
-    value: IPv4Subnet
+class NetworkObjectHostCommand(Command):
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/A-H/asa-command-ref-A-H/m_g-h.html#wp1854487280
+    """
 
-
-class ObjectNetworkCommandSubnetRemoveCommand(Command):
-    key: tuple[Literal["no"], Literal["subnet"]] = ("no", "subnet")
-    value: IPv4Subnet
-
-
-ObjectNetworkCommandSubnetModifyCommand = Union[
-    ObjectNetworkCommandSubnetCommand,
-    ObjectNetworkCommandSubnetRemoveCommand
-]
-
-
-class ObjectNetworkCommandHostCommand(Command):
-    key: Literal["host"] = "host"
+    key: Key["host"]
     value: IPv4Address
 
 
-class ObjectNetworkCommandHostRemoveCommand(Command):
-    key: tuple[Literal["no"], Literal["host"]] = ("no", "host")
+class NetworkObjectHostRemoveCommand(Command):
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/A-H/asa-command-ref-A-H/m_g-h.html#wp1854487280
+    """
+
+    key: Key["no", "host"]
     value: IPv4Address
 
 
-ObjectNetworkCommandHostModifyCommand = Union[
-    ObjectNetworkCommandHostCommand,
-    ObjectNetworkCommandHostRemoveCommand
+NetworkObjectHostModifyCommand = Union[
+    NetworkObjectHostCommand,
+    NetworkObjectHostRemoveCommand
 ]
 
 
-ObjectNetworkCommandTargetCommand = Union[
-    ObjectNetworkCommandSubnetModifyCommand,
-    ObjectNetworkCommandHostModifyCommand
+NetworkObjectTargetCommand = Union[
+    SubnetModifyCommand,
+    NetworkObjectHostModifyCommand
 ]
 
 
-class ObjectNetworkCommand(Command):
-    key: tuple[Literal["object"], Literal["network"]] = ("object", "network")
+class NetworkObjectCommand(Command):
+    key: Key["object", "network"]
     name: str
 
-    target: list[ObjectNetworkCommandTargetCommand] = []
+    target: list[NetworkObjectTargetCommand] = []
     description: list[DescriptionModifyCommand] = []
 
 
-ObjectCommand = ObjectNetworkCommand
+ObjectCommand = NetworkObjectCommand
 
 
 class ObjectReference(BaseModel):
-    key: Literal["object"] = "object"
+    key: Key["object"]
     name: str

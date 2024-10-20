@@ -1,176 +1,90 @@
-from ipaddress import IPv4Address
-from typing import Literal, Optional, Union
+from typing import Optional, Union
 
 from pydantic import BaseModel
 
 from ...command import Command
-from ._base import Text
+from ._base import Key
 from ._description import DescriptionModifyCommand
+from ._ip import IpAddressModifyCommand
+from ._management import ManagementOnlyModifyCommand
+from ._nameif import NameifModifyCommand
+from ._secondary_vlan import SecondaryVlans
+from ._security_level import SecurityLevelModifyCommand
 
 
 __all__ = (
-    "InterfaceClusterPool",
     "InterfaceCommand",
-    "InterfaceCommandIpAddressCommand",
-    "InterfaceCommandIpAddressModifyCommand",
-    "InterfaceCommandIpAddressRemoveCommand",
-    "InterfaceCommandManagementOnlyCommand",
-    "InterfaceCommandManagementOnlyModifyCommand",
-    "InterfaceCommandManagementOnlyRemoveCommand",
-    "InterfaceCommandNameCommand",
-    "InterfaceCommandNameModifyCommand",
-    "InterfaceCommandNameRemoveCommand",
-    "InterfaceCommandSecurityLevelCommand",
-    "InterfaceCommandSecurityLevelModifyCommand",
-    "InterfaceCommandSecurityLevelRemoveCommand",
-    "InterfaceCommandShutdownCommand",
-    "InterfaceCommandShutdownModifyCommand",
-    "InterfaceCommandShutdownRemoveCommand",
-    "InterfaceCommandVlanCommand",
-    "InterfaceCommandVlanModifyCommand",
-    "InterfaceCommandVlanRemoveCommand",
     "InterfaceReference",
-    "InterfaceSecondaryVlans",
-    "InterfaceStandby"
+    "InterfaceShutdownCommand",
+    "InterfaceShutdownModifyCommand",
+    "InterfaceShutdownRemoveCommand",
+    "InterfaceVlanCommand",
+    "InterfaceVlanRemoveCommand",
+    "InterfaceVlanModifyCommand"
 )
 
 
 class InterfaceReference(BaseModel):
-    key: Literal["interface"] = "interface"
+    key: Key["interface"]
     name: str
 
 
-class InterfaceSecondaryVlans(BaseModel):
-    key: Literal["secondary"] = "secondary"
-    value: Text
+class InterfaceShutdownCommand(Command):
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/S/asa-command-ref-S/m_shox-sn.html#wp1460040467
+    """
+
+    key: Key["shutdown"]
 
 
-class InterfaceStandby(BaseModel):
-    key: Literal["standby"] = "standby"
-    address: IPv4Address
+class InterfaceShutdownRemoveCommand(Command):
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/S/asa-command-ref-S/m_shox-sn.html#wp1460040467
+    """
+
+    key: Key["no", "shutdown"]
 
 
-class InterfaceClusterPool(BaseModel):
-    key: Literal["cluster-pool"] = "cluster-pool"
-    name: str
-
-
-class InterfaceCommandIpAddressCommand(Command):
-    key: tuple[Literal["ip"], Literal["address"]] = ("ip", "address")
-    address: IPv4Address
-    mask: Optional[IPv4Address] = None
-    redundancy: Optional[Union[InterfaceStandby, InterfaceClusterPool]] = None
-
-
-class InterfaceCommandIpAddressRemoveCommand(Command):
-    key: tuple[Literal["no"], Literal["ip"], Literal["address"]] = (
-        "no",
-        "ip",
-        "address"
-    )
-
-    address: Optional[IPv4Address] = None
-
-
-InterfaceCommandIpAddressModifyCommand = Union[
-    InterfaceCommandIpAddressCommand,
-    InterfaceCommandIpAddressRemoveCommand
+InterfaceShutdownModifyCommand = Union[
+    InterfaceShutdownCommand,
+    InterfaceShutdownRemoveCommand
 ]
 
 
-class InterfaceCommandNameCommand(Command):
-    key: Literal["nameif"] = "nameif"
-    value: str
+class InterfaceVlanCommand(Command):
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/T-Z/asa-command-ref-T-Z/v-commands.html#wp3958987400
+    """
 
-
-class InterfaceCommandNameRemoveCommand(Command):
-    key: tuple[Literal["no"], Literal["nameif"]] = ("no", "nameif")
-
-
-InterfaceCommandNameModifyCommand = Union[
-    InterfaceCommandNameCommand,
-    InterfaceCommandNameRemoveCommand
-]
-
-
-class InterfaceCommandSecurityLevelCommand(Command):
-    key: Literal["security-level"] = "security-level"
-    value: int
-
-
-class InterfaceCommandSecurityLevelRemoveCommand(Command):
-    key: tuple[Literal["no"], Literal["security-level"]] = (
-        "no",
-        "security-level"
-    )
-
-
-InterfaceCommandSecurityLevelModifyCommand = Union[
-    InterfaceCommandSecurityLevelCommand,
-    InterfaceCommandSecurityLevelRemoveCommand
-]
-
-
-class InterfaceCommandShutdownCommand(Command):
-    key: Literal["shutdown"] = "shutdown"
-
-
-class InterfaceCommandShutdownRemoveCommand(Command):
-    key: tuple[Literal["no"], Literal["shutdown"]] = ("no", "shutdown")
-
-
-InterfaceCommandShutdownModifyCommand = Union[
-    InterfaceCommandShutdownCommand,
-    InterfaceCommandShutdownRemoveCommand
-]
-
-
-class InterfaceCommandVlanCommand(Command):
-    key: Literal["vlan"] = "vlan"
+    key: Key["vlan"]
     id: int
-    secondary: Optional[InterfaceSecondaryVlans] = None
+    secondary: Optional[SecondaryVlans] = None
 
 
-class InterfaceCommandVlanRemoveCommand(Command):
-    key: tuple[Literal["no"], Literal["vlan"]] = ("no", "vlan")
+class InterfaceVlanRemoveCommand(Command):
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/T-Z/asa-command-ref-T-Z/v-commands.html#wp3958987400
+    """
+
+    key: Key["no", "vlan"]
     id: int
-    secondary: Optional[InterfaceSecondaryVlans] = None
+    secondary: Optional[SecondaryVlans] = None
 
 
-InterfaceCommandVlanModifyCommand = Union[
-    InterfaceCommandVlanCommand,
-    InterfaceCommandVlanRemoveCommand
-]
-
-
-class InterfaceCommandManagementOnlyCommand(Command):
-    key: Literal["management-only"] = "management-only"
-    individual: Optional[Literal["individual"]] = None
-
-
-class InterfaceCommandManagementOnlyRemoveCommand(Command):
-    key: tuple[Literal["no"], Literal["management-only"]] = (
-        "no",
-        "management-only"
-    )
-
-    individual: Optional[Literal["individual"]] = None
-
-
-InterfaceCommandManagementOnlyModifyCommand = Union[
-    InterfaceCommandManagementOnlyCommand,
-    InterfaceCommandManagementOnlyRemoveCommand
+InterfaceVlanModifyCommand = Union[
+    InterfaceVlanCommand,
+    InterfaceVlanRemoveCommand
 ]
 
 
 class InterfaceCommand(Command):
-    key: Literal["interface"] = "interface"
+    key: Key["interface"]
     id: str
 
-    name: list[InterfaceCommandNameModifyCommand] = []
+    name: list[NameifModifyCommand] = []
     description: list[DescriptionModifyCommand] = []
-    address: list[InterfaceCommandIpAddressModifyCommand] = []
-    management: list[InterfaceCommandManagementOnlyModifyCommand] = []
-    security: list[InterfaceCommandSecurityLevelModifyCommand] = []
-    shutdown: list[InterfaceCommandShutdownModifyCommand] = []
-    vlan: list[InterfaceCommandVlanModifyCommand] = []
+    address: list[IpAddressModifyCommand] = []
+    management: list[ManagementOnlyModifyCommand] = []
+    security: list[SecurityLevelModifyCommand] = []
+    shutdown: list[InterfaceShutdownModifyCommand] = []
+    vlan: list[InterfaceVlanModifyCommand] = []

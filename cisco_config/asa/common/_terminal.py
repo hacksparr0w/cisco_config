@@ -1,13 +1,26 @@
-from typing import Literal
-
 from ...command import Command
+from ._base import Key
+
 
 __all__ = (
     "TerminalWidthCommand",
+    "TerminalWidthRemoveCommand"
 )
 
 
 class TerminalWidthCommand(Command):
-    key: Literal["terminal"] = "terminal"
-    type: Literal["width"] = "width"
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/T-Z/asa-command-ref-T-Z/m_ta-tk.html#wp4037792375
+    """
+
+    key: Key["terminal", "width"]
+    value: int
+
+
+class TerminalWidthRemoveCommand(Command):
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/T-Z/asa-command-ref-T-Z/m_ta-tk.html#wp4037792375
+    """
+
+    key: Key["no", "terminal", "width"]
     value: int

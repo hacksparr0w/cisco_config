@@ -1,6 +1,5 @@
-from typing import Literal
-
 from ...command import Command
+from ._base import Key
 
 
 __all__ = (
@@ -9,4 +8,8 @@ __all__ = (
 
 
 class NamesCommand(Command):
-    key: Literal["names"] = "names"
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/I-R/asa-command-ref-I-R/n-commands.html#wp4039869163
+    """
+
+    key: Key["names"]

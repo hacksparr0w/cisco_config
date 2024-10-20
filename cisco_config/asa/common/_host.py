@@ -1,8 +1,8 @@
 from ipaddress import IPv4Address
 
-from typing import Literal
-
 from pydantic import BaseModel
+
+from ._base import Key
 
 
 __all__ = (
@@ -11,5 +11,5 @@ __all__ = (
 
 
 class Host(BaseModel):
-    key: Literal["host"] = "host"
+    key: Key["host"]
     value: IPv4Address

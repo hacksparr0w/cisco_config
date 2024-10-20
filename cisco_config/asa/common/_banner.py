@@ -1,7 +1,7 @@
 from typing import Literal
 
 from ...command import Command
-from ._base import Text
+from ._base import Key, Text
 
 
 __all__ = (
@@ -10,6 +10,6 @@ __all__ = (
 
 
 class BannerCommand(Command):
-    key: Literal["banner"] = "banner"
+    key: Key["banner"]
     type: Literal["asdm", "exec", "login", "motd"]
     value: Text
