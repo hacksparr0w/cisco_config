@@ -16,12 +16,10 @@ from ..common import (
     NameifRemoveCommand,
     NamesCommand,
     NetworkObjectCommand,
-    NetworkObjectGroupCommand,
+    ObjectGroupCommand,
     PassiveFtpModeCommand,
-    ProtocolObjectGroupCommand,
     SecurityLevelCommand,
     SecurityLevelRemoveCommand,
-    ServiceObjectGroupCommand,
     SubnetCommand
 )
 
@@ -49,11 +47,9 @@ hints = (
     NameifRemoveCommand,
     NamesCommand,
     NetworkObjectCommand,
-    NetworkObjectGroupCommand,
+    ObjectGroupCommand,
     PassiveFtpModeCommand,
-    ProtocolObjectGroupCommand,
     SecurityLevelCommand,
     SecurityLevelRemoveCommand,
-    ServiceObjectGroupCommand,
     SubnetCommand
 )

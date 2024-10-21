@@ -32,6 +32,7 @@ from cisco_config.asa.common import (
     NetworkObjectCommand,
     NetworkObjectGroupCommand,
     ObjectGroupNetworkObjectCommand,
+    ObjectGroupPortObjectCommand,
     ObjectGroupProtocolObjectCommand,
     ObjectGroupServiceObjectCommand,
     ObjectReference,
@@ -442,6 +443,45 @@ from cisco_config.asa.common import (
                     children=[
                         ObjectGroupProtocolObjectCommand(target="tcp"),
                         ObjectGroupProtocolObjectCommand(target="udp")
+                    ]
+                ),
+                ServiceObjectGroupCommand(
+                    name="GRP_SVC01",
+                    children=[
+                        ObjectGroupServiceObjectCommand(
+                            target=L4Service(
+                                protocol="tcp",
+                                source=L4ServiceSource(
+                                    value=Gt(value="1024")
+                                ),
+                                destination=L4ServiceDestination(
+                                    value=Eq(value="ssh")
+                                )
+                            )
+                        ),
+                        ObjectGroupServiceObjectCommand(
+                            target=L4Service(
+                                protocol="tcp",
+                                source=L4ServiceSource(
+                                    value=Gt(value="1024")
+                                ),
+                                destination=L4ServiceDestination(
+                                    value=Eq(value="domain")
+                                )
+                            )
+                        )
+                    ]
+                ),
+                ServiceObjectGroupCommand(
+                    name="GRP_SVC02",
+                    protocol="tcp",
+                    children=[
+                        ObjectGroupPortObjectCommand(
+                            target=Eq(value="ssh")
+                        ),
+                        ObjectGroupPortObjectCommand(
+                            target=Eq(value="domain")
+                        )
                     ]
                 )
             ]

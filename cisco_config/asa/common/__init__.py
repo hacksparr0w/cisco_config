@@ -20,12 +20,14 @@ from . import (
     _name,
     _nameif,
     _names,
-    _object_group,
     _object,
+    _object_group,
     _operator,
     _password,
+    _secondary_vlan,
     _security_group,
     _security_level,
+    _service,
     _subnet,
     _tag,
     _terminal,
@@ -55,13 +57,14 @@ from ._meta import *
 from ._name import *
 from ._nameif import *
 from ._names import *
-from ._object_group import *
 from ._object import *
+from ._object_group import *
 from ._operator import *
 from ._password import *
 from ._secondary_vlan import *
 from ._security_group import *
 from ._security_level import *
+from ._service import *
 from ._subnet import *
 from ._tag import *
 from ._terminal import *
@@ -92,13 +95,14 @@ __all__ = (
     _name.__all__ +
     _nameif.__all__ +
     _names.__all__ +
-    _object_group.__all__ +
     _object.__all__ +
+    _object_group.__all__ +
     _operator.__all__ +
     _password.__all__ +
     _secondary_vlan.__all__ +
     _security_group.__all__ +
     _security_level.__all__ +
+    _service.__all__ +
     _subnet.__all__ +
     _tag.__all__ +
     _terminal.__all__ +
