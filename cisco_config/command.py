@@ -1,5 +1,8 @@
 from typing import (
+    _SpecialForm,
+    Annotated,
     Any,
+    Literal,
     Optional,
     Self,
     Union,
@@ -7,7 +10,7 @@ from typing import (
     get_args as get_generic_args
 )
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from pydantic.fields import FieldInfo
 
 from .deserialization import (
@@ -27,6 +30,9 @@ from .token import Eol, Token, Word
 
 __all__ = (
     "Command",
+    "CommandArgumentBindingError",
+    "Key",
+    "Subcommand",
 
     "deserialize_command"
 )
@@ -58,6 +64,9 @@ def _is_command_hint(hint: Any) -> bool:
 
 
 def _is_subcommand_hint(hint: Any) -> bool:
+    if get_generic_origin(hint) is Annotated:
+        return _is_subcommand_hint(get_generic_args(hint)[0])
+
     return get_generic_origin(hint) is list and \
         _is_command_hint(get_generic_args(hint)[0])
 
@@ -94,6 +103,9 @@ def _get_subcommand_fields[T: BaseModel](
 
 
 def _extract_command_hint(hint: Any) -> Any:
+    if get_generic_origin(hint) is Annotated:
+        return _extract_command_hint(get_generic_args(hint)[0])
+
     return get_generic_args(hint)[0]
 
 
@@ -199,3 +211,22 @@ def deserialize_command(
     parent = parent.model_copy(update=children)
 
     return parent, eof
+
+
+@_SpecialForm
+def Key(self, parameters):
+    if not isinstance(parameters, tuple):
+        parameters = (parameters,)
+
+    return Annotated[
+        tuple[tuple(Literal[parameter] for parameter in parameters)],
+        Field(default=tuple(parameters))
+    ]
+
+
+@_SpecialForm
+def Subcommand(self, parameter):
+    return Annotated[
+        list[parameter],
+        Field(default_factory=list)
+    ]

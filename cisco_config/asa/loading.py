@@ -6,7 +6,9 @@ from typing import Iterator
 from ..command import Command
 from ..loading import load as _load
 
-from .common import ObjectCommand, ObjectGroupCommand, SimpleEntityRegistry
+from .common.command.object import Object as ObjectCommand
+from .common.command.object_group import ObjectGroup as ObjectGroupCommand
+from .common.entity_registry import SimpleEntityRegistry
 
 
 __all__ = (

@@ -6,44 +6,7 @@ import cisco_config.asa
 import pytest
 
 from cisco_config import Command
-from cisco_config.asa.common import (
-    AsaVersionCommand,
-    AutoMacAddressRemoveCommand,
-    BannerCommand,
-    DescriptionCommand,
-    EnablePasswordCommand,
-    Eq,
-    Gt,
-    Host,
-    HostnameCommand,
-    InterfaceCommand,
-    InterfaceShutdownCommand,
-    InterfaceVlanCommand,
-    IpAddressCommand,
-    IpAddressRemoveCommand,
-    Ipv4Subnet,
-    L4Service,
-    L4ServiceDestination,
-    L4ServiceSource,
-    ManagementOnlyCommand,
-    NameifCommand,
-    NameifRemoveCommand,
-    NamesCommand,
-    NetworkObjectCommand,
-    NetworkObjectGroupCommand,
-    ObjectGroupNetworkObjectCommand,
-    ObjectGroupPortObjectCommand,
-    ObjectGroupProtocolObjectCommand,
-    ObjectGroupServiceObjectCommand,
-    ObjectReference,
-    PassiveFtpModeCommand,
-    ProtocolObjectGroupCommand,
-    SecurityLevelCommand,
-    SecurityLevelRemoveCommand,
-    ServiceObjectGroupCommand,
-    SubnetCommand,
-    Text
-)
+from cisco_config.asa.common import command, dsl
 
 
 @pytest.mark.parametrize(
@@ -53,437 +16,527 @@ from cisco_config.asa.common import (
             "9.20",
             "./asa.conf",
             [
-                AsaVersionCommand(value="9.12(2)"),
-                HostnameCommand(value="ASA01"),
-                EnablePasswordCommand(value="*****", encryption="pbkdf2"),
-                NamesCommand(),
-                AutoMacAddressRemoveCommand(),
-                InterfaceCommand(
+                command.meta.AsaVersion(value="9.12(2)"),
+                command.hostname.Hostname(value="ASA01"),
+                command.password.EnablePassword(
+                    value="*****",
+                    encryption="pbkdf2"
+                ),
+                command.names.Names(),
+                command.mac.DisableAutomaticMacAddress(),
+                command.interface.Interface(
                     id="GigabitEthernet0/0",
-                    name=[NameifCommand(value="OUTSIDE_VLAN10")],
+                    name=[
+                        command.interface.name.Name(value="OUTSIDE_VLAN10")
+                    ],
                     description=[
-                        DescriptionCommand(value=Text(content="to Intrnet"))
+                        command.interface.description.Description(
+                            value=dsl.text.Text(content="to Intrnet")
+                        )
                     ],
                     address=[
-                        IpAddressCommand(
-                           address=Ipv4Address("172.16.100.1"),
-                           mask=Ipv4Address("255.255.255.0")
-                       )
-                   ],
-                   shutdown=[InterfaceShutdownCommand()],
-                   security=[SecurityLevelCommand(value=0)]
+                        command.interface.ip.IpAddress(
+                            address=Ipv4Address("172.16.100.1"),
+                             mask=Ipv4Address("255.255.255.0")
+                        )
+                    ],
+                    status=[command.interface.status.Shutdown()],
+                    security=[
+                        command.interface.security.SecurityLevel(value=0)
+                    ]
                 ),
-                InterfaceCommand(
+                command.interface.Interface(
                     id="GigabitEthernet0/0.35",
-                    name=[NameifCommand(value="OUT")],
+                    name=[command.interface.name.Name(value="OUT")],
                     address=[
-                        IpAddressCommand(
+                        command.interface.ip.IpAddress(
                             address=Ipv4Address("19.12.76.9"),
                             mask=Ipv4Address("255.255.255.240")
                         )
                     ],
-                    security=[SecurityLevelCommand(value=0)],
-                    vlan=[
-                        InterfaceVlanCommand(id=35)
-                    ]
+                    security=[
+                        command.interface.security.SecurityLevel(value=0)
+                    ],
+                    vlan=[command.interface.vlan.Vlan(id=35)],
                 ),
-                InterfaceCommand(
+                command.interface.Interface(
                     id="GigabitEthernet0/0.36",
-                    name=[NameifCommand(value="INS")],
+                    name=[
+                        command.interface.name.Name(value="INS")
+                    ],
                     description=[
-                        DescriptionCommand(
-                            value=Text(content="TO Inside networks")
+                        command.interface.description.Description(
+                            value=dsl.text.Text(content="TO Inside networks")
                         )
                     ],
                     address=[
-                        IpAddressCommand(
+                        command.interface.ip.IpAddress(
                             address=Ipv4Address("172.16.10.1"),
                             mask=Ipv4Address("255.255.255.0")
                         )
                     ],
-                    security=[SecurityLevelCommand(value=100)],
-                    vlan=[InterfaceVlanCommand(id=36)]
+                    security=[
+                        command.interface.security.SecurityLevel(value=100)
+                    ],
+                    vlan=[command.interface.vlan.Vlan(id=36)]
                 ),
-                InterfaceCommand(
+                command.interface.Interface(
                     id="GigabitEthernet0/1",
-                    name=[NameifCommand(value="DMZ1")],
+                    name=[
+                        command.interface.name.Name(value="DMZ1")
+                    ],
                     address=[
-                        IpAddressCommand(
+                        command.interface.ip.IpAddress(
                             address=Ipv4Address("172.16.20.1"),
-                            mask=Ipv4Address("255.255.252.0"),
+                            mask=Ipv4Address("255.255.252.0")
                         )
                     ],
-                    security=[SecurityLevelCommand(value=80)],
-                    shutdown=[InterfaceShutdownCommand()]
+                    security=[
+                        command.interface.security.SecurityLevel(value=80)
+                    ],
+                    status=[command.interface.status.Shutdown()]
                 ),
-                InterfaceCommand(
+                command.interface.Interface(
                     id="GigabitEthernet0/2",
-                    name=[NameifRemoveCommand()],
-                    address=[IpAddressRemoveCommand()],
-                    security=[SecurityLevelRemoveCommand()],
-                    shutdown=[InterfaceShutdownCommand()]
+                    name=[command.interface.name.RemoveName()],
+                    address=[command.interface.ip.RemoveIpAddress()],
+                    security=[
+                        command.interface.security.ResetSecurityLevel()
+                    ],
+                    status=[command.interface.status.Shutdown()]
                 ),
-                InterfaceCommand(
+                command.interface.Interface(
                     id="GigabitEthernet0/3",
-                    name=[NameifRemoveCommand()],
-                    address=[IpAddressRemoveCommand()],
-                    security=[SecurityLevelRemoveCommand()],
-                    shutdown=[InterfaceShutdownCommand()]
+                    name=[command.interface.name.RemoveName()],
+                    address=[command.interface.ip.RemoveIpAddress()],
+                    security=[
+                        command.interface.security.ResetSecurityLevel()
+                    ],
+                    status=[command.interface.status.Shutdown()]
                 ),
-                InterfaceCommand(
+                command.interface.Interface(
                     id="GigabitEthernet0/4",
-                    name=[NameifRemoveCommand()],
-                    address=[IpAddressRemoveCommand()],
-                    security=[SecurityLevelRemoveCommand()],
-                    shutdown=[InterfaceShutdownCommand()]
+                    name=[command.interface.name.RemoveName()],
+                    address=[command.interface.ip.RemoveIpAddress()],
+                    security=[
+                        command.interface.security.ResetSecurityLevel()
+                    ],
+                    status=[command.interface.status.Shutdown()]
                 ),
-                InterfaceCommand(
+                command.interface.Interface(
                     id="GigabitEthernet0/5",
-                    name=[NameifRemoveCommand()],
-                    address=[IpAddressRemoveCommand()],
-                    security=[SecurityLevelRemoveCommand()],
-                    shutdown=[InterfaceShutdownCommand()]
+                    name=[command.interface.name.RemoveName()],
+                    address=[command.interface.ip.RemoveIpAddress()],
+                    security=[
+                        command.interface.security.ResetSecurityLevel()
+                    ],
+                    status=[command.interface.status.Shutdown()]
                 ),
-                InterfaceCommand(
+                command.interface.Interface(
                     id="GigabitEthernet0/6",
-                    name=[NameifRemoveCommand()],
-                    address=[IpAddressRemoveCommand()],
-                    security=[SecurityLevelRemoveCommand()],
-                    shutdown=[InterfaceShutdownCommand()]
+                    name=[command.interface.name.RemoveName()],
+                    address=[command.interface.ip.RemoveIpAddress()],
+                    security=[
+                        command.interface.security.ResetSecurityLevel()
+                    ],
+                    status=[command.interface.status.Shutdown()]
                 ),
-                InterfaceCommand(
+                command.interface.Interface(
                     id="GigabitEthernet0/7",
-                    name=[NameifRemoveCommand()],
-                    address=[IpAddressRemoveCommand()],
-                    security=[SecurityLevelRemoveCommand()],
-                    shutdown=[InterfaceShutdownCommand()]
+                    name=[command.interface.name.RemoveName()],
+                    address=[command.interface.ip.RemoveIpAddress()],
+                    security=[
+                        command.interface.security.ResetSecurityLevel()
+                    ],
+                    status=[command.interface.status.Shutdown()]
                 ),
-                InterfaceCommand(
+                command.interface.Interface(
                     id="GigabitEthernet0/8",
-                    name=[NameifRemoveCommand()],
-                    address=[IpAddressRemoveCommand()],
-                    security=[SecurityLevelRemoveCommand()],
-                    shutdown=[InterfaceShutdownCommand()]
+                    name=[command.interface.name.RemoveName()],
+                    address=[command.interface.ip.RemoveIpAddress()],
+                    security=[
+                        command.interface.security.ResetSecurityLevel()
+                    ],
+                    status=[command.interface.status.Shutdown()]
                 ),
-                InterfaceCommand(
+                command.interface.Interface(
                     id="Management0/0",
-                    name=[NameifCommand(value="mgmt0")],
+                    name=[command.interface.name.Name(value="mgmt0")],
                     address=[
-                        IpAddressCommand(
+                        command.interface.ip.IpAddress(
                             address=Ipv4Address("192.168.10.35"),
                             mask=Ipv4Address("255.255.255.0")
                         )
                     ],
-                    management=[ManagementOnlyCommand()],
-                    security=[SecurityLevelCommand(value=100)]
+                    management=[
+                        command.interface.management.ManagementOnly()
+                    ],
+                    security=[
+                        command.interface.security.SecurityLevel(value=100)
+                    ]
                 ),
-                BannerCommand(type="login", value=Text(content="")),
-                BannerCommand(
+                command.banner.Banner(
                     type="login",
-                    value=Text(
+                    value=dsl.text.Text(content="")
+                ),
+                command.banner.Banner(
+                    type="login",
+                    value=dsl.text.Text(
                         content=(
                             "************************************************"
                             "*********************"
                         )
                     )
                 ),
-                BannerCommand(type="login", value=Text(content="Test Inc")),
-                BannerCommand(
+                command.banner.Banner(
                     type="login",
-                    value=Text(
+                    value=dsl.text.Text(content="Test Inc")
+                ),
+                command.banner.Banner(
+                    type="login",
+                    value=dsl.text.Text(
                         content=(
                             "NOTICE: This system should be used for "
                             "conducting Test Inc"
                         )
                     )
                 ),
-                BannerCommand(
+                command.banner.Banner(
                     type="login",
-                    value=Text(
+                    value=dsl.text.Text(
                         content=(
                             "business or for purposes authorized by Test Inc "
                             "management."
                         )
                     )
                 ),
-                BannerCommand(
+                command.banner.Banner(
                     type="login",
-                    value=Text(
+                    value=dsl.text.Text(
                         content=(
                             "It is mandatory to comply with all the "
                             "requirements listed"
                         )
                     )
                 ),
-                BannerCommand(
+                command.banner.Banner(
                     type="login",
-                    value=Text(
+                    value=dsl.text.Text(
                         content=(
                             "in the applicable security policy and only "
                             "process or"
                         )
                     )
                 ),
-                BannerCommand(
+                command.banner.Banner(
                     type="login",
-                    value=Text(
+                    value=dsl.text.Text(
                         content=(
                             "store the data classes approved for this asset "
                             "type."
                         )
                     )
                 ),
-                BannerCommand(
+                command.banner.Banner(
                     type="login",
-                    value=Text(
+                    value=dsl.text.Text(
                         content=(
-                            "Use is subject to audit at any time by Test "
-                            "Inc management."
+                            "Use is subject to audit at any time by Test Inc "
+                            "management."
                         )
                     )
                 ),
-                BannerCommand(
+                command.banner.Banner(
                     type="login",
-                    value=Text(
+                    value=dsl.text.Text(
                         content=(
                             "************************************************"
                             "*********************"
                         )
                     )
                 ),
-                BannerCommand(type="login", value=Text(content="")),
-                PassiveFtpModeCommand(),
-                NetworkObjectCommand(name="NET_192.168.0.0_16"),
-                NetworkObjectCommand(
+                command.banner.Banner(
+                    type="login",
+                    value=dsl.text.Text(content="")
+                ),
+                command.ftp.PassiveFtpMode(),
+                command.object.network.NetworkObject(
+                    name="NET_192.168.0.0_16"
+                ),
+                command.object.network.NetworkObject(
                     name="NET_192.169.0.0_16",
                     target=[
-                        SubnetCommand(
-                            value=Ipv4Subnet(
+                        command.object.network.subnet.Subnet(
+                            value=dsl.subnet.Ipv4Subnet(
                                 address=Ipv4Address("192.169.0.0"),
                                 mask=Ipv4Address("255.255.0.0")
                             )
                         )
                     ]
                 ),
-                NetworkObjectCommand(
+                command.object.network.NetworkObject(
                     name="NET_192.170.0.0_16",
                     target=[
-                        SubnetCommand(
-                            value=Ipv4Subnet(
+                        command.object.network.subnet.Subnet(
+                            value=dsl.subnet.Ipv4Subnet(
                                 address=Ipv4Address("192.170.0.0"),
                                 mask=Ipv4Address("255.255.0.0")
                             )
                         )
                     ]
                 ),
-                NetworkObjectCommand(
+                command.object.network.NetworkObject(
                     name="NET_192.171.0.0_16",
                     target=[
-                        SubnetCommand(
-                            value=Ipv4Subnet(
+                        command.object.network.subnet.Subnet(
+                            value=dsl.subnet.Ipv4Subnet(
                                 address=Ipv4Address("192.171.0.0"),
                                 mask=Ipv4Address("255.255.0.0")
                             )
                         )
                     ]
                 ),
-                NetworkObjectCommand(
+                command.object.network.NetworkObject(
                     name="NET_192.172.0.0_16",
                     target=[
-                        SubnetCommand(
-                            value=Ipv4Subnet(
+                        command.object.network.subnet.Subnet(
+                            value=dsl.subnet.Ipv4Subnet(
                                 address=Ipv4Address("192.172.0.0"),
                                 mask=Ipv4Address("255.255.0.0")
                             )
                         )
                     ]
                 ),
-                NetworkObjectCommand(
+                command.object.network.NetworkObject(
                     name="NET_192.173.0.0_16",
                     target=[
-                        SubnetCommand(
-                            value=Ipv4Subnet(
+                        command.object.network.subnet.Subnet(
+                            value=dsl.subnet.Ipv4Subnet(
                                 address=Ipv4Address("192.173.0.0"),
                                 mask=Ipv4Address("255.255.0.0")
                             )
                         )
                     ]
                 ),
-                NetworkObjectCommand(
+                command.object.network.NetworkObject(
                     name="NET_Testing01",
                     target=[
-                        SubnetCommand(
-                            value=Ipv4Subnet(
+                        command.object.network.subnet.Subnet(
+                            value=dsl.subnet.Ipv4Subnet(
                                 address=Ipv4Address("192.174.0.0"),
                                 mask=Ipv4Address("255.255.0.0")
                             )
                         )
                     ]
                 ),
-                NetworkObjectCommand(
+                command.object.network.NetworkObject(
                     name="NET_ThisIsReal_Network_For_VS",
                     target=[
-                        SubnetCommand(
-                            value=Ipv4Subnet(
+                        command.object.network.subnet.Subnet(
+                            value=dsl.subnet.Ipv4Subnet(
                                 address=Ipv4Address("192.175.0.0"),
                                 mask=Ipv4Address("255.255.0.0")
                             )
                         )
                     ]
                 ),
-                NetworkObjectCommand(
+                command.object.network.NetworkObject(
                     name="NET_192.176.0.0_16",
                     target=[
-                        SubnetCommand(
-                            value=Ipv4Subnet(
+                        command.object.network.subnet.Subnet(
+                            value=dsl.subnet.Ipv4Subnet(
                                 address=Ipv4Address("192.176.0.0"),
                                 mask=Ipv4Address("255.255.0.0")
                             )
                         )
                     ]
                 ),
-                NetworkObjectCommand(
+                command.object.network.NetworkObject(
                     name="NET_192.177.0.0_16",
                     target=[
-                        SubnetCommand(
-                            value=Ipv4Subnet(
+                        command.object.network.subnet.Subnet(
+                            value=dsl.subnet.Ipv4Subnet(
                                 address=Ipv4Address("192.177.0.0"),
                                 mask=Ipv4Address("255.255.0.0")
                             )
                         )
                     ]
                 ),
-                NetworkObjectGroupCommand(
+                command.object_group.network.NetworkObjectGroup(
                     name="VPN_Test2",
                     children=[
-                        ObjectGroupNetworkObjectCommand(
-                            target=ObjectReference(name="NET_192.169.0.0_16")
+                        command.object_group.network.object.NetworkObject(
+                            target=dsl.object.Object(
+                                name="NET_192.169.0.0_16"
+                            )
                         ),
-                        ObjectGroupNetworkObjectCommand(
-                            target=ObjectReference(name="NET_192.170.0.0_16")
+                        command.object_group.network.object.NetworkObject(
+                            target=dsl.object.Object(
+                                name="NET_192.170.0.0_16"
+                            )
                         ),
-                        ObjectGroupNetworkObjectCommand(
-                            target=ObjectReference(name="NET_192.171.0.0_16")
+                        command.object_group.network.object.NetworkObject(
+                            target=dsl.object.Object(
+                                name="NET_192.171.0.0_16"
+                            )
                         ),
-                        ObjectGroupNetworkObjectCommand(
-                            target=ObjectReference(name="NET_192.172.0.0_16")
+                        command.object_group.network.object.NetworkObject(
+                            target=dsl.object.Object(
+                                name="NET_192.172.0.0_16"
+                            )
                         ),
-                        ObjectGroupNetworkObjectCommand(
-                            target=ObjectReference(name="NET_192.173.0.0_16")
+                        command.object_group.network.object.NetworkObject(
+                            target=dsl.object.Object(
+                                name="NET_192.173.0.0_16"
+                            )
                         ),
-                        ObjectGroupNetworkObjectCommand(
-                            target=ObjectReference(name="NET_Testing01")
+                        command.object_group.network.object.NetworkObject(
+                            target=dsl.object.Object(
+                                name="NET_Testing01"
+                            )
                         ),
-                        ObjectGroupNetworkObjectCommand(
-                            target=ObjectReference(
+                        command.object_group.network.object.NetworkObject(
+                            target=dsl.object.Object(
                                 name="NET_ThisIsReal_Network_For_VS"
                             )
                         )
                     ]
                 ),
-                NetworkObjectGroupCommand(
+                command.object_group.network.NetworkObjectGroup(
                     name="VPN_Shared_Infra",
                     children=[
-                        ObjectGroupNetworkObjectCommand(
-                            target=ObjectReference(name="NET_192.176.0.0_16")
+                        command.object_group.network.object.NetworkObject(
+                            target=dsl.object.Object(
+                                name="NET_192.176.0.0_16"
+                            )
                         ),
-                        ObjectGroupNetworkObjectCommand(
-                            target=ObjectReference(name="NET_192.177.0.0_16")
+                        command.object_group.network.object.NetworkObject(
+                            target=dsl.object.Object(
+                                name="NET_192.177.0.0_16"
+                            )
                         )
                     ]
                 ),
-                NetworkObjectGroupCommand(
+                command.object_group.network.NetworkObjectGroup(
                     name="GRP01",
                     children=[
-                        ObjectGroupNetworkObjectCommand(
-                            target=Host(value=Ipv4Address("172.16.69.101"))
+                        command.object_group.network.object.NetworkObject(
+                            target=dsl.host.Host(
+                                value=Ipv4Address("172.16.69.101")
+                            )
                         ),
-                        ObjectGroupNetworkObjectCommand(
-                            target=Host(value=Ipv4Address("172.16.69.17"))
+                        command.object_group.network.object.NetworkObject(
+                            target=dsl.host.Host(
+                                value=Ipv4Address("172.16.69.17")
+                            )
                         )
                     ]
                 ),
-                NetworkObjectGroupCommand(
+                command.object_group.network.NetworkObjectGroup(
                     name="GRP02",
                     children=[
-                        ObjectGroupNetworkObjectCommand(
-                            target=Host(value=Ipv4Address("172.17.34.117"))
+                        command.object_group.network.object.NetworkObject(
+                            target=dsl.host.Host(
+                                value=Ipv4Address("172.17.34.117")
+                            )
                         ),
-                        ObjectGroupNetworkObjectCommand(
-                            target=Host(value=Ipv4Address("172.17.34.118"))
+                        command.object_group.network.object.NetworkObject(
+                            target=dsl.host.Host(
+                                value=Ipv4Address("172.17.34.118")
+                            )
                         )
                     ]
                 ),
-                ServiceObjectGroupCommand(
+                command.object_group.service.ServiceObjectGroup(
                     name="MGMT01",
                     children=[
-                        ObjectGroupServiceObjectCommand(
-                            target=L4Service(
+                        command.object_group.service.object.ServiceObject(
+                            target=dsl.service.L4Service(
                                 protocol="tcp",
-                                source=L4ServiceSource(
-                                    value=Gt(value="1024")
+                                source=dsl.service.L4ServiceSource(
+                                    value=dsl.op.Gt(value="1024")
                                 ),
-                                destination=L4ServiceDestination(
-                                    value=Eq(value="ssh")
+                                destination=dsl.service.L4ServiceDestination(
+                                    value=dsl.op.Eq(value="ssh")
                                 )
                             )
                         ),
-                        ObjectGroupServiceObjectCommand(
-                            target=L4Service(
+                        command.object_group.service.object.ServiceObject(
+                            target=dsl.service.L4Service(
                                 protocol="udp",
-                                destination=L4ServiceDestination(
-                                    value=Eq(value="domain")
+                                destination=dsl.service.L4ServiceDestination(
+                                    value=dsl.op.Eq(value="domain")
                                 )
                             )
                         )
                     ]
                 ),
-                ProtocolObjectGroupCommand(
+                command.object_group.protocol.ProtocolObjectGroup(
                     name="PROTO01",
                     children=[
-                        ObjectGroupProtocolObjectCommand(target="tcp"),
-                        ObjectGroupProtocolObjectCommand(target="udp")
+                        command.object_group.protocol.object.ProtocolObject(
+                            target="tcp"
+                        ),
+                        command.object_group.protocol.object.ProtocolObject(
+                            target="udp"
+                        )
                     ]
                 ),
-                ServiceObjectGroupCommand(
+                command.object_group.service.ServiceObjectGroup(
                     name="GRP_SVC01",
                     children=[
-                        ObjectGroupServiceObjectCommand(
-                            target=L4Service(
+                        command.object_group.service.object.ServiceObject(
+                            target=dsl.service.L4Service(
                                 protocol="tcp",
-                                source=L4ServiceSource(
-                                    value=Gt(value="1024")
+                                source=dsl.service.L4ServiceSource(
+                                    value=dsl.op.Gt(value="1024")
                                 ),
-                                destination=L4ServiceDestination(
-                                    value=Eq(value="ssh")
+                                destination=dsl.service.L4ServiceDestination(
+                                    value=dsl.op.Eq(value="ssh")
                                 )
                             )
                         ),
-                        ObjectGroupServiceObjectCommand(
-                            target=L4Service(
+                        command.object_group.service.object.ServiceObject(
+                            target=dsl.service.L4Service(
                                 protocol="tcp",
-                                source=L4ServiceSource(
-                                    value=Gt(value="1024")
+                                source=dsl.service.L4ServiceSource(
+                                    value=dsl.op.Gt(value="1024")
                                 ),
-                                destination=L4ServiceDestination(
-                                    value=Eq(value="domain")
+                                destination=dsl.service.L4ServiceDestination(
+                                    value=dsl.op.Eq(value="domain")
                                 )
                             )
                         )
                     ]
                 ),
-                ServiceObjectGroupCommand(
+                command.object_group.service.ServiceObjectGroup(
                     name="GRP_SVC02",
                     protocol="tcp",
                     children=[
-                        ObjectGroupPortObjectCommand(
-                            target=Eq(value="ssh")
+                        command.object_group.service.object.PortObject(
+                            target=dsl.op.Eq(value="ssh")
                         ),
-                        ObjectGroupPortObjectCommand(
-                            target=Eq(value="domain")
+                        command.object_group.service.object.PortObject(
+                            target=dsl.op.Eq(value="domain")
                         )
                     ]
-                )
+                ),
+                command.object_group.service.ServiceObjectGroup(
+                    name="GRP_SVC03",
+                    protocol="tcp-udp",
+                    children=[
+                        command.object_group.service.object.PortObject(
+                            target=dsl.op.Eq(value="22")
+                        ),
+                        command.object_group.service.object.PortObject(
+                            target=dsl.op.Range(
+                                start=1024,
+                                stop=65535
+                            )
+                        )
+                    ]
+                ),
+                command.pager.PagerLines(value=23)
             ]
         ),
     ]
