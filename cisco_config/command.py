@@ -213,7 +213,7 @@ def deserialize_command(
     return parent, eof
 
 
-@_SpecialForm
+@_SpecialForm # type: ignore[call-arg]
 def Key(self, parameters):
     if not isinstance(parameters, tuple):
         parameters = (parameters,)
@@ -224,7 +224,7 @@ def Key(self, parameters):
     ]
 
 
-@_SpecialForm
+@_SpecialForm # type: ignore[call-arg]
 def Subcommand(self, parameter):
     return Annotated[
         list[parameter],

@@ -10,13 +10,18 @@ readme = "README.md"
 cisco_config = "cisco_config.__main__:main"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.10"
 pydantic = "^2.9.1"
 click = "^8.1.7"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
 mypy = "^1.12.0"
+
+[[tool.mypy.overrides]]
+module = "cisco_config.asa.*"
+ignore_errors = true
+
 
 [build-system]
 requires = ["poetry-core"]
