@@ -581,7 +581,9 @@ from cisco_config.asa.common import command, dsl
                     protocol="tcp",
                     source=dsl.object_group.ObjectGroup(name="GRP01"),
                     destination=dsl.object_group.ObjectGroup(name="GRP02"),
-                    destination_port=dsl.object_group.ObjectGroup(name="GRP_SVC02")
+                    destination_port=dsl.object_group.ObjectGroup(
+                        name="GRP_SVC02"
+                    )
                 ),
                 command.access_list.extended.PortbasedExtendedAccessList(
                     name="GLBACL_IN",
@@ -589,7 +591,9 @@ from cisco_config.asa.common import command, dsl
                     protocol=dsl.object_group.ObjectGroup(name="PROTO01"),
                     source=dsl.object_group.ObjectGroup(name="GRP01"),
                     destination=dsl.object_group.ObjectGroup(name="GRP02"),
-                    destination_port=dsl.object_group.ObjectGroup(name="GRP_SVC03")
+                    destination_port=dsl.object_group.ObjectGroup(
+                        name="GRP_SVC03"
+                    )
                 ),
                 command.access_list.extended.IcmpExtendedAccessList(
                     name="GLBACL_IN",
@@ -619,7 +623,9 @@ from cisco_config.asa.common import command, dsl
                     action="permit",
                     protocol="ip",
                     source=dsl.object_group.ObjectGroup(name="VPN_Test2"),
-                    destination=dsl.object_group.ObjectGroup(name="VPN_Shared_Infra")
+                    destination=dsl.object_group.ObjectGroup(
+                        name="VPN_Shared_Infra"
+                    )
                 ),
                 command.pager.PagerLines(value=23)
             ]

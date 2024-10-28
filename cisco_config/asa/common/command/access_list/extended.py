@@ -35,7 +35,6 @@ type AccessListIcmpOptions = Union[
 
 
 type AccessListPort = Union[
-    dsl.op.Op,
     Annotated[
         dsl.object_group.ObjectGroup,
         AfterValidator(
@@ -43,7 +42,8 @@ type AccessListPort = Union[
                 ObjectGroupType.SERVICE
             )
         )
-    ]
+    ],
+    dsl.op.Op
 ]
 
 

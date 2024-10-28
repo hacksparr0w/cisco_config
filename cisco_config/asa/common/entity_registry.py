@@ -110,9 +110,6 @@ class SimpleEntityRegistry(EntityRegistry):
     def register_object(self, command: ObjectCommand) -> Object:
         object = self.create_object(command)
 
-        if object.name in self._objects:
-            raise DuplicateEntityError
-
         self._objects[object.name] = object
 
         return object
@@ -122,9 +119,6 @@ class SimpleEntityRegistry(EntityRegistry):
         command: ObjectGroupCommand
     ) -> ObjectGroup:
         object_group = self.create_object_group(command)
-
-        if object_group.name in self._object_groups:
-            raise DuplicateEntityError
 
         self._object_groups[object_group.name] = object_group
 
