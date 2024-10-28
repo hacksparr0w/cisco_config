@@ -1,5 +1,6 @@
 from ipaddress import IPv4Address
 
+from typing_extensions import TypeAliasType
 from typing import (
     Annotated,
     Any,
@@ -9,7 +10,6 @@ from typing import (
     Protocol,
     Self,
     TypeAlias,
-    TypeAliasType,
     TypeVar,
     Union,
     get_args as get_generic_args,
