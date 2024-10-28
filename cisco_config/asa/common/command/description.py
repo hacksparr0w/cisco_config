@@ -1,4 +1,4 @@
-from typing import Union
+from typing import TypeAlias, Union
 
 from ....command import Command, Key
 from .. import dsl
@@ -28,4 +28,4 @@ class RemoveDescription(Command):
     key: Key["no", "description"]
 
 
-ModifyDescription = Union[Description, RemoveDescription]
+ModifyDescription: TypeAlias = Union[Description, RemoveDescription]

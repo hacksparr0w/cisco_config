@@ -1,4 +1,4 @@
-from typing import Literal, Optional, Union
+from typing import Literal, Optional, TypeAlias, Union
 
 from pydantic import BaseModel
 
@@ -9,7 +9,7 @@ __all__ = (
 )
 
 
-type IcmpType = Union[
+IcmpType: TypeAlias = Union[
     Literal["echo", "echo-reply"],
     int
 ]

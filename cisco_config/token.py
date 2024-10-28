@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from io import TextIOBase
-from typing import Generator, Iterable, Optional, Union
+from typing import Generator, Iterable, Optional, TypeAlias, Union
 
 from pydantic import BaseModel
 
@@ -29,7 +29,7 @@ class Word(BaseModel):
     value: str
 
 
-type Token = Union[
+Token: TypeAlias = Union[
     Comment,
     Eol,
     Word
@@ -38,9 +38,6 @@ type Token = Union[
 
 class _ControlCharacter:
     COMMENT_START_CHARACTERS = ("!", ":")
-
-
-type _ProcessingResult = tuple[Iterable[Token], Optional[_TokenReaderState]]
 
 
 class _ReadingCommentState(BaseModel):
@@ -83,14 +80,20 @@ class _SeekingState(BaseModel):
             return (), _ReadingWordState(buffer=character)
 
 
-type _TokenReaderState = Union[
+_TokenReaderState: TypeAlias = Union[
     _ReadingCommentState,
     _ReadingWordState,
     _SeekingState
 ]
 
 
-type TokenReader = Generator[Token, None, None]
+_ProcessingResult: TypeAlias = tuple[
+    Iterable[Token],
+    Optional[_TokenReaderState]
+]
+
+
+TokenReader: TypeAlias = Generator[Token, None, None]
 
 
 def token_reader(source: TextIOBase) -> TokenReader:

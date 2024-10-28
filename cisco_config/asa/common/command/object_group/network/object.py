@@ -1,4 +1,4 @@
-from typing import Union
+from typing import TypeAlias, Union
 
 from ......command import Command, Key
 from .... import dsl
@@ -12,7 +12,7 @@ __all__ = (
 )
 
 
-type NetworkObjectTarget = Union[
+NetworkObjectTarget: TypeAlias = Union[
     dsl.host.Host,
     dsl.subnet.Ipv4Subnet,
     dsl.object.Object
@@ -37,7 +37,7 @@ class RemoveNetworkObject(Command):
     target: NetworkObjectTarget
 
 
-ModifyNetworkObject = Union[
+ModifyNetworkObject: TypeAlias = Union[
     NetworkObject,
     RemoveNetworkObject
 ]

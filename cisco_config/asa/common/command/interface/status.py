@@ -1,4 +1,4 @@
-from typing import Union
+from typing import TypeAlias, Union
 
 from .....command import Command, Key
 
@@ -26,7 +26,7 @@ class Start(Command):
     key: Key["no", "shutdown"]
 
 
-ModifyStatus = Union[
+ModifyStatus: TypeAlias = Union[
     Shutdown,
     Start
 ]

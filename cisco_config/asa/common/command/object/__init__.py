@@ -1,3 +1,5 @@
+from typing import TypeAlias
+
 from . import network
 
 
@@ -8,4 +10,4 @@ __all__ = (
 )
 
 
-Object = network.NetworkObject
+Object: TypeAlias = network.NetworkObject

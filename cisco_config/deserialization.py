@@ -8,7 +8,9 @@ from typing import (
     Optional,
     Protocol,
     Self,
+    TypeAlias,
     TypeAliasType,
+    TypeVar,
     Union,
     get_args as get_generic_args,
     get_origin as get_generic_origin,
@@ -44,6 +46,10 @@ __all__ = (
 )
 
 
+T = TypeVar("T")
+M = TypeVar("M", bound=BaseModel)
+
+
 class Next(BaseModel):
     pass
 
@@ -56,8 +62,8 @@ class Replay(BaseModel):
     index: int
 
 
-type ProgressiveDeserializerRequest = Union[Next, Record, Replay]
-type ProgressiveDeserializer[T] = Generator[
+ProgressiveDeserializerRequest: TypeAlias = Union[Next, Record, Replay]
+ProgressiveDeserializer: TypeAlias = Generator[
     ProgressiveDeserializerRequest,
     Any,
     T
@@ -170,12 +176,12 @@ def deserialize_dictionary(
     return result
 
 
-def deserialize_base_model[T: BaseModel](
-    hint: type[T],
+def deserialize_base_model(
+    hint: type[M],
     fields: Optional[dict[str, FieldInfo]] = None,
     defaults: dict[str, Any] = {},
     context: Optional[Context] = None
-) -> ProgressiveDeserializer[T]:
+) -> ProgressiveDeserializer[M]:
     if not fields:
         fields = {
             name: field

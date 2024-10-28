@@ -1,4 +1,4 @@
-from typing import Union
+from typing import TypeAlias, Union
 
 from pydantic import BaseModel
 
@@ -12,7 +12,7 @@ __all__ = (
 )
 
 
-type SecurityGroupTarget = Union[name.Name, tag.Tag]
+SecurityGroupTarget: TypeAlias = Union[name.Name, tag.Tag]
 
 
 class SecurityGroup(BaseModel):

@@ -5,6 +5,7 @@ from typing import (
     Literal,
     Optional,
     Self,
+    TypeVar,
     Union,
     get_origin as get_generic_origin,
     get_args as get_generic_args
@@ -36,6 +37,9 @@ __all__ = (
 
     "deserialize_command"
 )
+
+
+M = TypeVar("M", bound=BaseModel)
 
 
 class CommandArgumentBindingError(DeserializationError):
@@ -75,7 +79,7 @@ def _is_subcommand_field(field: FieldInfo) -> bool:
     return _is_subcommand_hint(field.annotation)
 
 
-def _get_regular_fields[T: BaseModel](hint: type[T]) -> dict[str, FieldInfo]:
+def _get_regular_fields(hint: type[M]) -> dict[str, FieldInfo]:
     return {
         name: field
         for name, field in hint.model_fields.items()
@@ -83,18 +87,14 @@ def _get_regular_fields[T: BaseModel](hint: type[T]) -> dict[str, FieldInfo]:
     }
 
 
-def _get_subcommand_defaults[T: BaseModel](
-    hint: type[T]
-) -> dict[str, list[Any]]:
+def _get_subcommand_defaults(hint: type[M]) -> dict[str, list[Any]]:
     return {
         name: []
         for name, field in _get_subcommand_fields(hint).items()
     }
 
 
-def _get_subcommand_fields[T: BaseModel](
-    hint: type[T]
-) -> dict[str, FieldInfo]:
+def _get_subcommand_fields(hint: type[M]) -> dict[str, FieldInfo]:
     return {
         name: field
         for name, field in hint.model_fields.items()

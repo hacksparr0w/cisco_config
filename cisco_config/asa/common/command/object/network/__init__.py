@@ -1,4 +1,4 @@
-from typing import Union
+from typing import TypeAlias, Union
 
 from ......command import Command, Key, Subcommand
 from ... import description
@@ -17,7 +17,7 @@ __all__ = (
 )
 
 
-NetworkObjectTarget = Union[
+NetworkObjectTarget: TypeAlias = Union[
     host.ModifyHost,
     subnet.ModifySubnet
 ]

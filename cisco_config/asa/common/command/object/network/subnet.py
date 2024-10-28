@@ -1,4 +1,4 @@
-from typing import Union
+from typing import TypeAlias, Union
 
 from ......command import Command, Key
 from .... import dsl
@@ -29,7 +29,7 @@ class RemoveSubnet(Command):
     value: dsl.subnet.Ipv4Subnet
 
 
-ModifySubnet = Union[
+ModifySubnet: TypeAlias = Union[
     RemoveSubnet,
     Subnet
 ]

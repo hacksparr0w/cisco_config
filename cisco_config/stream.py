@@ -1,4 +1,4 @@
-from typing import Iterable, Iterator, Optional, Self
+from typing import Generic, Iterable, Iterator, Optional, Self, TypeVar
 
 
 __all__ = (
@@ -8,7 +8,10 @@ __all__ = (
 )
 
 
-class ReplayableIterator[T]:
+T = TypeVar("T")
+
+
+class ReplayableIterator(Generic[T]):
     _iterator: Iterator[T]
     _is_recording: bool
     _replay_buffer: list[T]
@@ -66,5 +69,5 @@ class ReplayableIterator[T]:
         self._is_recording = False
 
 
-def replayable[T](iterable: Iterable[T]) -> ReplayableIterator[T]:
+def replayable(iterable: Iterable[T]) -> ReplayableIterator[T]:
     return ReplayableIterator(iter(iterable))

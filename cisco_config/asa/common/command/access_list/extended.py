@@ -1,4 +1,4 @@
-from typing import Annotated, Literal, Optional, Union
+from typing import Annotated, Literal, Optional, TypeAlias, Union
 
 from pydantic import AfterValidator
 
@@ -21,7 +21,7 @@ __all__ = (
 )
 
 
-type AccessListIcmpOptions = Union[
+AccessListIcmpOptions: TypeAlias = Union[
     dsl.icmp.IcmpOptions,
     Annotated[
         dsl.object_group.ObjectGroup,
@@ -34,7 +34,7 @@ type AccessListIcmpOptions = Union[
 ]
 
 
-type AccessListPort = Union[
+AccessListPort: TypeAlias = Union[
     Annotated[
         dsl.object_group.ObjectGroup,
         AfterValidator(
@@ -47,7 +47,7 @@ type AccessListPort = Union[
 ]
 
 
-type AccessListProtocol = Union[
+AccessListProtocol: TypeAlias = Union[
     Annotated[
         dsl.object_group.ObjectGroup,
         AfterValidator(
@@ -69,13 +69,13 @@ type AccessListProtocol = Union[
 ]
 
 
-type AccessListSecurityGroup = Union[
+AccessListSecurityGroup: TypeAlias = Union[
     dsl.object_group.SecurityObjectGroup,
     dsl.security_group.SecurityGroup
 ]
 
 
-type AccessListTarget = Union[
+AccessListTarget: TypeAlias = Union[
     dsl.host.Host,
     dsl.subnet.Ipv4Subnet,
     Literal["any", "any4", "any6"],
@@ -100,7 +100,7 @@ type AccessListTarget = Union[
 ]
 
 
-type AccessListUser = Union[
+AccessListUser: TypeAlias = Union[
     dsl.object_group.UserObjectGroup,
     dsl.user.User,
     dsl.user_group.UserGroup
@@ -144,7 +144,7 @@ class PortbasedExtendedAccessList(Command):
     inactive: Optional[Literal["inactive"]] = None
 
 
-ExtendedAccessList = Union[
+ExtendedAccessList: TypeAlias = Union[
     IcmpExtendedAccessList,
     PortbasedExtendedAccessList
 ]

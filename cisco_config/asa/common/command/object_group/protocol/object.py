@@ -1,4 +1,4 @@
-from typing import Union
+from typing import TypeAlias, Union
 
 from ......command import Command, Key
 
@@ -28,7 +28,7 @@ class RemoveProtocolObject(Command):
     target: str
 
 
-ModifyProtocolObject = Union[
+ModifyProtocolObject: TypeAlias = Union[
     ProtocolObject,
     RemoveProtocolObject
 ]

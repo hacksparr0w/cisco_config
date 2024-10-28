@@ -1,6 +1,6 @@
 from ipaddress import IPv4Address as Ipv4Address
 
-from typing import Union
+from typing import TypeAlias, Union
 
 from ......command import Command, Key
 
@@ -30,7 +30,7 @@ class RemoveHost(Command):
     value: Ipv4Address
 
 
-ModifyHost = Union[
+ModifyHost: TypeAlias = Union[
     Host,
     RemoveHost
 ]

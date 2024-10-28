@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional, TypeAlias, Union
 
 from .....command import Command, Key
 from ... import dsl
@@ -31,7 +31,7 @@ class RemoveVlan(Command):
     secondary: Optional[dsl.vlan.SecondaryVlan] = None
 
 
-ModifyVlan = Union[
+ModifyVlan: TypeAlias = Union[
     Vlan,
     RemoveVlan
 ]

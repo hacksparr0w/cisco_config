@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional, TypeAlias, Union
 
 from ....command import Command, Key
 from .. import dsl
@@ -28,7 +28,7 @@ class DisableAutomaticMacAddress(Command):
     key: Key["no", "mac-address", "auto"]
 
 
-ModifyAutomaticMacAddress = Union[
+ModifyAutomaticMacAddress: TypeAlias = Union[
     AutomaticMacAddress,
     DisableAutomaticMacAddress
 ]

@@ -1,4 +1,4 @@
-from typing import Union
+from typing import TypeAlias, Union
 
 from pydantic import BaseModel
 
@@ -41,4 +41,4 @@ class Range(BaseModel):
     stop: int
 
 
-type Op = Union[Eq, Gt, Lt, Neq, Range]
+Op: TypeAlias = Union[Eq, Gt, Lt, Neq, Range]

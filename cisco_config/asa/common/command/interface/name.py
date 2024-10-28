@@ -1,4 +1,4 @@
-from typing import Union
+from typing import TypeAlias, Union
 
 from .....command import Command, Key
 
@@ -27,7 +27,7 @@ class RemoveName(Command):
     key: Key["no", "nameif"]
 
 
-ModifyName = Union[
+ModifyName: TypeAlias = Union[
     Name,
     RemoveName
 ]

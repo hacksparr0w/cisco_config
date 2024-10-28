@@ -1,5 +1,5 @@
 from ipaddress import IPv4Address as Ipv4Address
-from typing import Optional, Union
+from typing import Optional, TypeAlias, Union
 
 from .....command import Command, Key
 from ... import dsl
@@ -32,7 +32,7 @@ class RemoveIpAddress(Command):
     address: Optional[Ipv4Address] = None
 
 
-ModifyIpAddress = Union[
+ModifyIpAddress: TypeAlias = Union[
     IpAddress,
     RemoveIpAddress
 ]

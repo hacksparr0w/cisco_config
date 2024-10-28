@@ -1,4 +1,4 @@
-from typing import Literal, Optional, Union
+from typing import Literal, Optional, TypeAlias, Union
 
 from .....command import Command, Key
 
@@ -28,7 +28,7 @@ class DisableManagementOnly(Command):
     individual: Optional[Literal["individual"]] = None
 
 
-ModifyManagementOnly = Union[
+ModifyManagementOnly: TypeAlias = Union[
     DisableManagementOnly,
     ManagementOnly
 ]

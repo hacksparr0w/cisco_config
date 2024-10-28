@@ -1,6 +1,6 @@
 from ipaddress import IPv4Address as Ipv4Address
 
-from typing import Union
+from typing import TypeAlias, Union
 
 from pydantic import BaseModel
 
@@ -24,7 +24,7 @@ class IpAddressStandby(BaseModel):
     address: Ipv4Address
 
 
-IpAddressFailover = Union[
+IpAddressFailover: TypeAlias = Union[
     IpAddressClusterPool,
     IpAddressStandby
 ]

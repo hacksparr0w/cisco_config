@@ -1,4 +1,4 @@
-from typing import Union
+from typing import TypeAlias, Union
 
 from ......command import Command, Key
 from .... import dsl
@@ -16,7 +16,7 @@ __all__ = (
 )
 
 
-type ServiceObjectTarget = Union[
+ServiceObjectTarget: TypeAlias = Union[
     dsl.service.L4Service,
     dsl.service.IcmpService,
     dsl.object.Object,
@@ -24,7 +24,7 @@ type ServiceObjectTarget = Union[
 ]
 
 
-type PortObjectTarget = Union[
+PortObjectTarget: TypeAlias = Union[
     dsl.op.Eq,
     dsl.op.Range
 ]
@@ -48,7 +48,7 @@ class RemovePortObject(Command):
     target: PortObjectTarget
 
 
-ModifyPortObject = Union[
+ModifyPortObject: TypeAlias = Union[
     PortObject,
     RemovePortObject
 ]
@@ -72,7 +72,7 @@ class RemoveServiceObject(Command):
     target: ServiceObjectTarget
 
 
-ModifyServiceObject = Union[
+ModifyServiceObject: TypeAlias = Union[
     ServiceObject,
     RemoveServiceObject
 ]

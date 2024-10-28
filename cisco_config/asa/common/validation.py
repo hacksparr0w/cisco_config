@@ -1,6 +1,6 @@
 import warnings
 
-from typing import Any, Iterable, Optional
+from typing import Any, Iterable, Optional, TypeVar
 
 from pydantic import ValidationInfo
 from pydantic_core.core_schema import WithInfoValidatorFunction
@@ -10,6 +10,7 @@ from .entity import Object, ObjectGroup, ObjectGroupType, ObjectType
 
 __all__ = (
     "Named",
+
     "validate_object_group_types",
     "validate_object_types"
 )
@@ -17,6 +18,9 @@ __all__ = (
 
 class Named:
     name: str
+
+
+T = TypeVar("T", bound=Named)
 
 
 def _get_entity_registry(info: ValidationInfo) -> Optional[Any]:
@@ -34,7 +38,7 @@ def _get_entity_registry(info: ValidationInfo) -> Optional[Any]:
 def validate_object_types(
     *types: Iterable[ObjectType]
 ) -> WithInfoValidatorFunction:
-    def validate[T: Named](value: T, info: ValidationInfo) -> T:
+    def validate(value: T, info: ValidationInfo) -> T:
         registry = _get_entity_registry(info)
 
         if not registry:
@@ -55,7 +59,7 @@ def validate_object_types(
 def validate_object_group_types(
     *types: Iterable[ObjectGroupType]
 ) -> WithInfoValidatorFunction:
-    def validate[T: Named](value: T, info: ValidationInfo) -> T:
+    def validate(value: T, info: ValidationInfo) -> T:
         registry = _get_entity_registry(info)
 
         if not registry:

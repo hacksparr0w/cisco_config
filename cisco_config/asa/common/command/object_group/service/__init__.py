@@ -1,4 +1,4 @@
-from typing import Optional, Literal, Union
+from typing import Optional, Literal, TypeAlias, Union
 
 from ......command import Command, Key, Subcommand
 from . import object
@@ -10,7 +10,7 @@ __all__ = (
 )
 
 
-ServiceObjectGroupChild = Union[
+ServiceObjectGroupChild: TypeAlias = Union[
     object.ModifyPortObject,
     object.ModifyServiceObject
 ]

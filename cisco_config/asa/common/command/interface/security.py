@@ -1,4 +1,4 @@
-from typing import Union
+from typing import TypeAlias, Union
 
 from .....command import Command, Key
 
@@ -27,7 +27,7 @@ class ResetSecurityLevel(Command):
     key: Key["no", "security-level"]
 
 
-ModifySecurityLevel = Union[
+ModifySecurityLevel: TypeAlias = Union[
     SecurityLevel,
     ResetSecurityLevel
 ]

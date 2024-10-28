@@ -1,4 +1,4 @@
-from typing import Union
+from typing import TypeAlias, Union
 
 from . import (
     network,
@@ -17,7 +17,7 @@ __all__ = (
 )
 
 
-ObjectGroup = Union[
+ObjectGroup: TypeAlias = Union[
     network.NetworkObjectGroup,
     protocol.ProtocolObjectGroup,
     service.ServiceObjectGroup
