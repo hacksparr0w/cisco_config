@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from io import TextIOBase
-from typing import Generator, Iterable, Optional, Union
+from typing import Generator, Iterable, Optional, Tuple, Union
 from typing_extensions import TypeAlias
 
 from pydantic import BaseModel
@@ -88,7 +88,7 @@ _TokenReaderState: TypeAlias = Union[
 ]
 
 
-_ProcessingResult: TypeAlias = tuple[
+_ProcessingResult: TypeAlias = Tuple[
     Iterable[Token],
     Optional[_TokenReaderState]
 ]

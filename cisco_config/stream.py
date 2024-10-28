@@ -1,5 +1,5 @@
 from typing_extensions import Self
-from typing import Generic, Iterable, Iterator, Optional, TypeVar
+from typing import Generic, Iterable, Iterator, List, Optional, TypeVar
 
 
 __all__ = (
@@ -15,7 +15,7 @@ T = TypeVar("T")
 class ReplayableIterator(Generic[T]):
     _iterator: Iterator[T]
     _is_recording: bool
-    _replay_buffer: list[T]
+    _replay_buffer: List[T]
     _replay_index: Optional[int]
 
     def __init__(self, iterator: Iterator[T]) -> None:

@@ -1,7 +1,7 @@
 import importlib
 
 from io import TextIOBase
-from typing import Iterator
+from typing import Iterator, Tuple, Type
 
 from ..command import Command
 from ..loading import load as _load
@@ -21,7 +21,7 @@ _HINT_MODULES = {
 }
 
 
-def _import_hints(version: str) -> tuple[type[Command], ...]:
+def _import_hints(version: str) -> Tuple[Type[Command], ...]:
     name = _HINT_MODULES.get(version)
 
     if not name:
@@ -46,7 +46,7 @@ def load(
     for command in commands:
         if isinstance(command, ObjectCommand):
             registry.register_object(command)
-        elif isinstance(command, ObjectGroupCommand):
+        elif isinstance(command, ObjectGroupCommand.__args__):
             registry.register_object_group(command)
 
         yield command

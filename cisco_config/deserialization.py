@@ -3,10 +3,13 @@ from ipaddress import IPv4Address
 from typing import (
     Annotated,
     Any,
+    Dict,
     Generator,
     Literal,
     Optional,
     Protocol,
+    Tuple,
+    Type,
     TypeVar,
     Union,
     get_args as get_generic_args,
@@ -69,7 +72,7 @@ ProgressiveDeserializer: TypeAlias = Generator[
 ]
 
 
-Context = dict[str, Any]
+Context = Dict[str, Any]
 
 
 class DeserializationError(Exception):
@@ -103,7 +106,7 @@ def deserialize_ipv4_address() -> ProgressiveDeserializer[IPv4Address]:
 
 
 def deserialize_literal(
-    members: tuple[str, ...]
+    members: Tuple[str, ...]
 ) -> ProgressiveDeserializer[str]:
     result = yield from deserialize_string()
 
@@ -133,7 +136,7 @@ def deserialize_none() -> ProgressiveDeserializer[None]:
 
 
 def deserialize_union(
-    members: tuple[Any, ...],
+    members: Tuple[Any, ...],
     context: Optional[Context] = None
 ) -> ProgressiveDeserializer[Any]:
     index = yield Record()
@@ -151,9 +154,9 @@ def deserialize_union(
 
 
 def deserialize_tuple(
-    members: tuple[Any, ...],
+    members: Tuple[Any, ...],
     context: Optional[Context] = None
-) -> ProgressiveDeserializer[tuple[Any, ...]]:
+) -> ProgressiveDeserializer[Tuple[Any, ...]]:
     result = []
 
     for member in members:
@@ -164,9 +167,9 @@ def deserialize_tuple(
 
 
 def deserialize_dictionary(
-    hints: dict[str, Any],
+    hints: Dict[str, Any],
     context: Optional[Context] = None
-) -> ProgressiveDeserializer[dict[str, Any]]:
+) -> ProgressiveDeserializer[Dict[str, Any]]:
     result = {}
 
     for name, hint in hints.items():
@@ -176,9 +179,9 @@ def deserialize_dictionary(
 
 
 def deserialize_base_model(
-    hint: type[M],
-    fields: Optional[dict[str, FieldInfo]] = None,
-    defaults: dict[str, Any] = {},
+    hint: Type[M],
+    fields: Optional[Dict[str, FieldInfo]] = None,
+    defaults: Dict[str, Any] = {},
     context: Optional[Context] = None
 ) -> ProgressiveDeserializer[M]:
     if not fields:
@@ -231,7 +234,7 @@ def deserialize(
         members = get_generic_args(hint)
 
         return (yield from deserialize_literal(members))
-    elif get_generic_origin(hint) is tuple:
+    elif get_generic_origin(hint) in (Tuple, tuple):
         members = get_generic_args(hint)
 
         return (yield from deserialize_tuple(members, context=context))

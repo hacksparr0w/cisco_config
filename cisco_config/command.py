@@ -3,8 +3,12 @@ from typing import (
     _SpecialForm,
     Annotated,
     Any,
+    Dict,
     Literal,
+    List,
     Optional,
+    Tuple,
+    Type,
     TypeVar,
     Union,
     get_origin as get_generic_origin,
@@ -79,7 +83,7 @@ def _is_subcommand_field(field: FieldInfo) -> bool:
     return _is_subcommand_hint(field.annotation)
 
 
-def _get_regular_fields(hint: type[M]) -> dict[str, FieldInfo]:
+def _get_regular_fields(hint: Type[M]) -> Dict[str, FieldInfo]:
     return {
         name: field
         for name, field in hint.model_fields.items()
@@ -87,14 +91,14 @@ def _get_regular_fields(hint: type[M]) -> dict[str, FieldInfo]:
     }
 
 
-def _get_subcommand_defaults(hint: type[M]) -> dict[str, list[Any]]:
+def _get_subcommand_defaults(hint: Type[M]) -> Dict[str, List[Any]]:
     return {
         name: []
         for name, field in _get_subcommand_fields(hint).items()
     }
 
 
-def _get_subcommand_fields(hint: type[M]) -> dict[str, FieldInfo]:
+def _get_subcommand_fields(hint: Type[M]) -> dict[str, FieldInfo]:
     return {
         name: field
         for name, field in hint.model_fields.items()
@@ -110,17 +114,22 @@ def _extract_command_hint(hint: Any) -> Any:
 
 
 def _get_subcommand_field_name(
-    fields: dict[str, FieldInfo],
+    fields: Dict[str, FieldInfo],
     subcommand: Command
 ) -> str:
     for name, field in fields.items():
-        if isinstance(subcommand, _extract_command_hint(field.annotation)):
+        hint = _extract_command_hint(field.annotation)
+
+        if get_generic_origin(hint) is Union:
+            if isinstance(subcommand, get_generic_args(hint)):
+                return name
+        elif isinstance(subcommand, hint):
             return name
 
     raise TypeError
 
 
-def _seek(hint: type[Token]) -> ProgressiveDeserializer[None]:
+def _seek(hint: Type[Token]) -> ProgressiveDeserializer[None]:
     index = yield Record()
 
     while True:
@@ -136,10 +145,10 @@ def _seek(hint: type[Token]) -> ProgressiveDeserializer[None]:
 
 
 def deserialize_command(
-    parent_hints: tuple[type[Command], ...],
+    parent_hints: Tuple[Type[Command], ...],
     strict: bool = True,
     context: Optional[Context] = None
-) -> ProgressiveDeserializer[tuple[Optional[Command], bool]]:
+) -> ProgressiveDeserializer[Tuple[Optional[Command], bool]]:
     try:
         yield from _seek(Word)
     except EOFError:
@@ -219,7 +228,7 @@ def Key(self, parameters):
         parameters = (parameters,)
 
     return Annotated[
-        tuple[tuple(Literal[parameter] for parameter in parameters)],
+        Tuple[tuple(Literal[parameter] for parameter in parameters)],
         Field(default=tuple(parameters))
     ]
 
@@ -227,6 +236,6 @@ def Key(self, parameters):
 @_SpecialForm # type: ignore[call-arg]
 def Subcommand(self, parameter):
     return Annotated[
-        list[parameter],
+        List[parameter],
         Field(default_factory=list)
     ]

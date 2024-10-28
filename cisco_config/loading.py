@@ -1,5 +1,5 @@
 from io import TextIOBase
-from typing import Optional, Iterator
+from typing import Optional, Iterator, Tuple, Type
 
 from .command import Command, deserialize_command
 from .deserialization import (
@@ -20,9 +20,9 @@ __all__ = (
 
 
 def _consume(
-    deserializer: ProgressiveDeserializer[tuple[Optional[Command], bool]],
+    deserializer: ProgressiveDeserializer[Tuple[Optional[Command], bool]],
     stream: ReplayableIterator[Token]
-) -> tuple[Optional[Command], bool]:
+) -> Tuple[Optional[Command], bool]:
     try:
         request = next(deserializer)
 
@@ -50,7 +50,7 @@ def _consume(
 
 
 def load(
-    hints: tuple[type[Command], ...],
+    hints: Tuple[Type[Command], ...],
     source: TextIOBase,
     strict: bool = True,
     context: Optional[Context] = None

@@ -1,6 +1,7 @@
 import os
 
 from ipaddress import IPv4Address as Ipv4Address
+from typing import List
 
 import cisco_config.asa
 import pytest
@@ -635,7 +636,7 @@ from cisco_config.asa.common import command, dsl
 def test(
     version: str,
     file_name: str,
-    expected_commands: list[Command]
+    expected_commands: List[Command]
 ) -> None:
     path = os.path.join(
         os.path.dirname(os.path.realpath(__file__)),

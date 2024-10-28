@@ -15,7 +15,7 @@ __all__ = (
 
 
 class IcmpService(BaseModel):
-    type: tuple[Literal["icmp", "icmp6"]]
+    type: Literal["icmp", "icmp6"]
     options: Optional[icmp.IcmpOptions] = None
 
 

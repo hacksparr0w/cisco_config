@@ -2,7 +2,7 @@ import importlib
 import sys
 
 from io import TextIOBase
-from typing import Any, Callable, Iterator
+from typing import Any, Callable, Iterator, List
 
 import click
 
@@ -50,6 +50,6 @@ def load(source: TextIOBase, format: str, strict: bool) -> None:
 
     loader = _import_loader(format)
     commands = list(loader(source, strict=strict))
-    data = TypeAdapter(list[Any]).dump_json(commands, indent=2)
+    data = TypeAdapter(List[Any]).dump_json(commands, indent=2)
 
     click.echo(data)
