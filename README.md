@@ -77,6 +77,11 @@ with open("asa.conf", "r", encoding="utf-8") as source:
     commands = cisco_config.asa.load(version, source, strict=False)
 ```
 
-### More
+### Other examples
 
 For more examples, see the `tests` directory.
+
+## Issues
+
+Found bug or have an idea for a cool feature? Please, open an issue in our
+issue tracker. Pull requests are also welcome!
