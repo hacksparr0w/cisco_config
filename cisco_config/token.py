@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from io import TextIOBase
-from typing import Generator, Iterable, Optional, Union
+from typing import Generator, Iterable, Optional, Tuple, Union
+from typing_extensions import TypeAlias
 
 from pydantic import BaseModel
 
@@ -10,6 +11,7 @@ __all__ = (
     "Comment",
     "Eol",
     "Token",
+    "TokenReader",
     "Word",
 
     "token_reader"
@@ -28,7 +30,7 @@ class Word(BaseModel):
     value: str
 
 
-type Token = Union[
+Token: TypeAlias = Union[
     Comment,
     Eol,
     Word
@@ -36,10 +38,7 @@ type Token = Union[
 
 
 class _ControlCharacter:
-    COMMENT_START_CHARACTERS = ("!", "#")
-
-
-type _ProcessingResult = tuple[Iterable[Token], Optional[_TokenReaderState]]
+    COMMENT_START_CHARACTERS = ("!", ":")
 
 
 class _ReadingCommentState(BaseModel):
@@ -82,18 +81,29 @@ class _SeekingState(BaseModel):
             return (), _ReadingWordState(buffer=character)
 
 
-type _TokenReaderState = Union[
+_TokenReaderState: TypeAlias = Union[
     _ReadingCommentState,
     _ReadingWordState,
     _SeekingState
 ]
 
 
-def token_reader(stream: TextIOBase) -> Generator[Token, None, None]:
-    state = _SeekingState()
+_ProcessingResult: TypeAlias = Tuple[
+    Iterable[Token],
+    Optional[_TokenReaderState]
+]
+
+
+TokenReader: TypeAlias = Generator[Token, None, None]
+
+
+def token_reader(source: TextIOBase) -> TokenReader:
+    state: Optional[_TokenReaderState] = _SeekingState()
 
     while True:
-        character = stream.read(1)
+        character = source.read(1)
+
+        assert state is not None
 
         iterable, state = state.process(character)
 
