@@ -1,17 +1,17 @@
 import warnings
 
-from typing import Any, Optional
+from typing import Any, Iterable, Optional
 
 from pydantic import ValidationInfo
-from pydantic_core.core_schema import WithInfoValidatorFunction   
+from pydantic_core.core_schema import WithInfoValidatorFunction
 
 from .entity import Object, ObjectGroup, ObjectGroupType, ObjectType
 
 
 __all__ = (
     "Named",
-    "validate_object_group_type",
-    "validate_object_type"
+    "validate_object_group_types",
+    "validate_object_types"
 )
 
 
@@ -31,7 +31,9 @@ def _get_entity_registry(info: ValidationInfo) -> Optional[Any]:
     return registry
 
 
-def validate_object_type(type: ObjectType) -> WithInfoValidatorFunction:
+def validate_object_types(
+    *types: Iterable[ObjectType]
+) -> WithInfoValidatorFunction:
     def validate[T: Named](value: T, info: ValidationInfo) -> T:
         registry = _get_entity_registry(info)
 
@@ -40,9 +42,9 @@ def validate_object_type(type: ObjectType) -> WithInfoValidatorFunction:
 
         object: Object = registry.get_object(value.name)
 
-        if object.type != type:
+        if object.type not in types:
             raise ValueError(
-                f"Object '{value.name}' is not of type '{type}'"
+                f"Object '{value.name}' is not any of {types}"
             )
 
         return value
@@ -50,8 +52,8 @@ def validate_object_type(type: ObjectType) -> WithInfoValidatorFunction:
     return validate
 
 
-def validate_object_group_type(
-    type: ObjectGroupType
+def validate_object_group_types(
+    *types: Iterable[ObjectGroupType]
 ) -> WithInfoValidatorFunction:
     def validate[T: Named](value: T, info: ValidationInfo) -> T:
         registry = _get_entity_registry(info)
@@ -61,9 +63,9 @@ def validate_object_group_type(
 
         object_group: ObjectGroup = registry.get_object_group(value.name)
 
-        if object_group.type != type:
+        if object_group.type not in types:
             raise ValueError(
-                f"Object group '{value.name}' is not of type '{type}'"
+                f"Object group '{value.name}' is not any of {types}"
             )
 
         return value

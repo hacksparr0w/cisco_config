@@ -7,6 +7,8 @@ __all__ = (
 
 
 hints = (
+    command.access_list.extended.ExtendedAccessList,
+    command.access_list.remark.AccessListRemark,
     command.banner.Banner,
     command.ftp.PassiveFtpMode,
     command.hostname.Hostname,

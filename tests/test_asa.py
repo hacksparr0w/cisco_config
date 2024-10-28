@@ -536,6 +536,91 @@ from cisco_config.asa.common import command, dsl
                         )
                     ]
                 ),
+                command.access_list.extended.PortbasedExtendedAccessList(
+                    name="GLBACL_IN",
+                    action="permit",
+                    protocol="ip",
+                    source=dsl.object_group.ObjectGroup(name="VPN_Test2"),
+                    destination=dsl.object_group.ObjectGroup(
+                        name="VPN_Shared_Infra"
+                    )
+                ),
+                command.access_list.extended.PortbasedExtendedAccessList(
+                    name="GLBACL_IN",
+                    action="permit",
+                    protocol="tcp",
+                    source=dsl.object_group.ObjectGroup(name="GRP01"),
+                    destination=dsl.object_group.ObjectGroup(name="GRP02"),
+                    destination_port=dsl.op.Eq(value="1416")
+                ),
+                command.access_list.extended.PortbasedExtendedAccessList(
+                    name="GLBACL_IN",
+                    action="permit",
+                    protocol="udp",
+                    source=dsl.object_group.ObjectGroup(name="GRP01"),
+                    destination=dsl.object_group.ObjectGroup(name="GRP02"),
+                    destination_port=dsl.op.Eq(value="1414")
+                ),
+                command.access_list.extended.PortbasedExtendedAccessList(
+                    name="GLBACL_IN",
+                    action="permit",
+                    protocol=dsl.object_group.ObjectGroup(name="PROTO01"),
+                    source=dsl.object_group.ObjectGroup(name="GRP01"),
+                    destination=dsl.object_group.ObjectGroup(name="GRP02")
+                ),
+                command.access_list.extended.PortbasedExtendedAccessList(
+                    name="GLBACL_IN",
+                    action="permit",
+                    protocol=dsl.object_group.ObjectGroup(name="MGMT01"),
+                    source=dsl.object_group.ObjectGroup(name="GRP01"),
+                    destination=dsl.object_group.ObjectGroup(name="GRP02")
+                ),
+                command.access_list.extended.PortbasedExtendedAccessList(
+                    name="GLBACL_IN",
+                    action="permit",
+                    protocol="tcp",
+                    source=dsl.object_group.ObjectGroup(name="GRP01"),
+                    destination=dsl.object_group.ObjectGroup(name="GRP02"),
+                    destination_port=dsl.object_group.ObjectGroup(name="GRP_SVC02")
+                ),
+                command.access_list.extended.PortbasedExtendedAccessList(
+                    name="GLBACL_IN",
+                    action="permit",
+                    protocol=dsl.object_group.ObjectGroup(name="PROTO01"),
+                    source=dsl.object_group.ObjectGroup(name="GRP01"),
+                    destination=dsl.object_group.ObjectGroup(name="GRP02"),
+                    destination_port=dsl.object_group.ObjectGroup(name="GRP_SVC03")
+                ),
+                command.access_list.extended.IcmpExtendedAccessList(
+                    name="GLBACL_IN",
+                    action="permit",
+                    protocol="icmp",
+                    source=dsl.host.Host(value=Ipv4Address("192.168.10.1")),
+                    destination="any",
+                    options=dsl.icmp.IcmpOptions(type="echo", code=0)
+                ),
+                command.access_list.extended.IcmpExtendedAccessList(
+                    name="GLBACL_IN",
+                    action="permit",
+                    protocol="icmp",
+                    source="any",
+                    destination="any",
+                    options=dsl.icmp.IcmpOptions(type="echo", code=0)
+                ),
+                command.access_list.extended.PortbasedExtendedAccessList(
+                    name="GLBACL_IN",
+                    action="deny",
+                    protocol="ip",
+                    source="any",
+                    destination="any"
+                ),
+                command.access_list.extended.PortbasedExtendedAccessList(
+                    name="VPN_TEST01_IPSEC",
+                    action="permit",
+                    protocol="ip",
+                    source=dsl.object_group.ObjectGroup(name="VPN_Test2"),
+                    destination=dsl.object_group.ObjectGroup(name="VPN_Shared_Infra")
+                ),
                 command.pager.PagerLines(value=23)
             ]
         ),

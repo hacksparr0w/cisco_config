@@ -1,4 +1,5 @@
 from . import (
+    access_list,
     access_group,
     banner,
     description,
@@ -20,6 +21,7 @@ from . import (
 
 
 __all__ = (
+    "access_list",
     "access_group",
     "banner",
     "description",
