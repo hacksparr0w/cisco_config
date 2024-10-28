@@ -77,23 +77,33 @@ class SimpleEntityRegistry(EntityRegistry):
 
     @staticmethod
     def create_object(command: ObjectCommand) -> Object:
-        match command:
-            case NetworkObjectCommand(name=name):
-                return Object(type=ObjectType.NETWORK, name=name)
-            case _:
-                raise TypeError
+        if isinstance(command, NetworkObjectCommand):
+            return Object(type=ObjectType.NETWORK, name=command.name)
+        else:
+            raise TypeError
     
     @staticmethod
     def create_object_group(command: ObjectGroupCommand) -> ObjectGroup:
-        match command:
-            case NetworkObjectGroupCommand(name=name):
-                return ObjectGroup(type=ObjectGroupType.NETWORK, name=name)
-            case ProtocolObjectGroupCommand(name=name):
-                return ObjectGroup(type=ObjectGroupType.PROTOCOL, name=name)
-            case ServiceObjectGroupCommand(name=name):
-                return ObjectGroup(type=ObjectGroupType.SERVICE, name=name)
-            case _:
-                raise TypeError
+        if isinstance(command, NetworkObjectGroupCommand):
+            return ObjectGroup(
+                type=ObjectGroupType.NETWORK,
+                name=command.name
+            )
+
+        elif isinstance(command, ProtocolObjectGroupCommand):
+            return ObjectGroup(
+                type=ObjectGroupType.PROTOCOL,
+                name=command.name
+            )
+
+        elif isinstance(command, ServiceObjectGroupCommand):
+            return ObjectGroup(
+                type=ObjectGroupType.SERVICE,
+                name=command.name
+            )
+
+        else:
+            raise TypeError
 
     def get_object(self, name: str) -> Object:
         try:
