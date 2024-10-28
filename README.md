@@ -28,3 +28,55 @@ You can install `cisco_config` using `pip`:
 ```bash
 pip install git+https://github.com/hacksparr0w/cisco_config.git
 ```
+
+## Usage
+
+### CLI
+
+```bash
+Usage: cisco_config [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  load  Loads a Cisco configuration and prints the parsed commands as JSON
+```
+
+### Python API
+
+ - `cisco_config.asa.load`
+
+## Examples
+
+### Defining a command model
+
+```python
+from typing import Literal, Optional
+
+from cisco_config.command import Command, Key
+from cisco_config.asa.common import dsl
+
+
+class EnablePassword(Command):
+    key: Key["enable", "password"]
+    value: str
+    level: Optional[dsl.level.Level] = None
+    encryption: Optional[Literal["pbkdf2", "encrypted"]] = None
+
+```
+
+### Loading a configuration file
+
+```python
+import cisco_config.asa
+
+version = "9.20"
+
+with open("asa.conf", "r", encoding="utf-8") as source:
+    commands = cisco_config.asa.load(version, source, strict=False)
+```
+
+### More
+
+For more examples, see the `tests` directory.
