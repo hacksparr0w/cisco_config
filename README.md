@@ -20,3 +20,11 @@ products, such as Cisco ASA.
  - [ ] :books: Extensive library of predefined command models
  - [ ] :joystick: CLI tools and utilities for manipulating Cisco configuration
  files on the fly
+
+## Installation
+
+You can install `cisco_config` using `pip`:
+
+```bash
+pip install git+https://github.com/hacksparr0w/cisco_config.git
+```
