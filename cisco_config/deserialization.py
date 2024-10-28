@@ -1,6 +1,6 @@
 from ipaddress import IPv4Address
 
-from typing_extensions import TypeAliasType
+from typing_extensions import Self, TypeAliasType
 from typing import (
     Annotated,
     Any,
@@ -8,7 +8,6 @@ from typing import (
     Literal,
     Optional,
     Protocol,
-    Self,
     TypeAlias,
     TypeVar,
     Union,

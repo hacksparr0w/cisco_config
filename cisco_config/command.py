@@ -1,10 +1,10 @@
+from typing_extensions import Self
 from typing import (
     _SpecialForm,
     Annotated,
     Any,
     Literal,
     Optional,
-    Self,
     TypeVar,
     Union,
     get_origin as get_generic_origin,

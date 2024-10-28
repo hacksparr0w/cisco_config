@@ -1,4 +1,5 @@
-from typing import Generic, Iterable, Iterator, Optional, Self, TypeVar
+from typing_extensions import Self
+from typing import Generic, Iterable, Iterator, Optional, TypeVar
 
 
 __all__ = (
