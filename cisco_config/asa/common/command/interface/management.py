@@ -1,4 +1,5 @@
-from typing import Literal, Optional, TypeAlias, Union
+from typing import Literal, Optional, Union
+from typing_extensions import TypeAlias
 
 from .....command import Command, Key
 

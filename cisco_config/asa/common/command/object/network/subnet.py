@@ -1,4 +1,5 @@
-from typing import TypeAlias, Union
+from typing import Union
+from typing_extensions import TypeAlias
 
 from ......command import Command, Key
 from .... import dsl

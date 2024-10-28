@@ -1,5 +1,6 @@
 from ipaddress import IPv4Address as Ipv4Address
-from typing import Optional, TypeAlias, Union
+from typing import Optional, Union
+from typing_extensions import TypeAlias
 
 from .....command import Command, Key
 from ... import dsl

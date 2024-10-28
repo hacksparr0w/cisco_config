@@ -1,6 +1,7 @@
 from ipaddress import IPv4Address as Ipv4Address
 
-from typing import TypeAlias, Union
+from typing import Union
+from typing_extensions import TypeAlias
 
 from ......command import Command, Key
 

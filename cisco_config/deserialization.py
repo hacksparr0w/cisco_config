@@ -1,6 +1,5 @@
 from ipaddress import IPv4Address
 
-from typing_extensions import Self, TypeAliasType
 from typing import (
     Annotated,
     Any,
@@ -8,13 +7,14 @@ from typing import (
     Literal,
     Optional,
     Protocol,
-    TypeAlias,
     TypeVar,
     Union,
     get_args as get_generic_args,
     get_origin as get_generic_origin,
     runtime_checkable
 )
+
+from typing_extensions import Self, TypeAlias, TypeAliasType
 
 from pydantic import BaseModel, TypeAdapter, ValidationError
 from pydantic.fields import FieldInfo

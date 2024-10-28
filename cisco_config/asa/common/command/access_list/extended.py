@@ -1,4 +1,5 @@
-from typing import Annotated, Literal, Optional, TypeAlias, Union
+from typing import Annotated, Literal, Optional, Union
+from typing_extensions import TypeAlias
 
 from pydantic import AfterValidator
 
