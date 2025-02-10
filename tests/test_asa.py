@@ -298,6 +298,19 @@ from cisco_config.asa.common import command, dsl
                     ]
                 ),
                 command.object.network.NetworkObject(
+                    name="RNG_192.168.10.1-192.168.10.20",
+                    target=[
+                        command.object.network.range.Range(
+                            start=Ipv4Address(
+                                "192.168.10.1"
+                            ),
+                            end=Ipv4Address(
+                                "192.168.10.20"
+                            )
+                        )
+                    ]
+                ),
+                command.object.network.NetworkObject(
                     name="NET_192.172.0.0_16",
                     target=[
                         command.object.network.subnet.Subnet(
