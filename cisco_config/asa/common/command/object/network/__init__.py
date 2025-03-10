@@ -5,12 +5,14 @@ from ......command import Command, Key, Subcommand
 from ... import description
 from . import (
     host,
+    range,
     subnet
 )
 
 
 __all__ = (
     "host",
+    "range",
     "subnet",
 
     "NetworkObject",
@@ -20,6 +22,7 @@ __all__ = (
 
 NetworkObjectTarget: TypeAlias = Union[
     host.ModifyHost,
+    range.ModifyRange,
     subnet.ModifySubnet
 ]
 
