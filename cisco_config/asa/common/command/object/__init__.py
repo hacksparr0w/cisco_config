@@ -1,13 +1,21 @@
+from typing import Union
 from typing_extensions import TypeAlias
 
-from . import network
+from . import (
+    network,
+    service
+)
 
 
 __all__ = (
     "network",
+    "service",
 
     "Object"
 )
 
 
-Object: TypeAlias = network.NetworkObject
+Object: TypeAlias = Union[
+    network.NetworkObject,
+    service.ServiceObject
+]

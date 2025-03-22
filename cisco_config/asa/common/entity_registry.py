@@ -3,6 +3,7 @@ from typing import Iterable
 
 from .command.object import Object as ObjectCommand
 from .command.object.network import NetworkObject as NetworkObjectCommand
+from .command.object.service import ServiceObject as ServiceObjectCommand
 from .command.object_group import ObjectGroup as ObjectGroupCommand
 from .command.object_group.network import \
     NetworkObjectGroup as NetworkObjectGroupCommand
@@ -79,6 +80,8 @@ class SimpleEntityRegistry(EntityRegistry):
     def create_object(command: ObjectCommand) -> Object:
         if isinstance(command, NetworkObjectCommand):
             return Object(type=ObjectType.NETWORK, name=command.name)
+        elif isinstance(command, ServiceObjectCommand):
+            return Object(type=ObjectType.SERVICE, name=command.name)
         else:
             raise TypeError
     
