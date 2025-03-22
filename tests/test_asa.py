@@ -475,6 +475,26 @@ from cisco_config.asa.common import command, dsl
                         )
                     ]
                 ),
+                command.object_group.network.NetworkObjectGroup(
+                    name="GRP03",
+                    children=[
+                        command.object_group.network.object.NetworkObject(
+                            target=dsl.host.Host(
+                                value=Ipv4Address("172.17.34.117")
+                            )
+                        ),
+                        command.object_group.network.object.NetworkObject(
+                            target=dsl.object.Object(
+                                name="NET_192.177.0.0_16"
+                            )
+                        ),
+                        command.object_group.network.object.GroupObject(
+                            target=dsl.text.Text(
+                                content="GRP01"
+                            )
+                        )
+                    ]
+                ),
                 command.object_group.service.ServiceObjectGroup(
                     name="MGMT01",
                     children=[
