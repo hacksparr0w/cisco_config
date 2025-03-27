@@ -489,9 +489,7 @@ from cisco_config.asa.common import command, dsl
                             )
                         ),
                         command.object_group.network.object.GroupObject(
-                            target=dsl.text.Text(
-                                content="GRP01"
-                            )
+                            target="GRP01"
                         )
                     ]
                 ),

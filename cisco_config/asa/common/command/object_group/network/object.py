@@ -19,8 +19,7 @@ __all__ = (
 NetworkObjectTarget: TypeAlias = Union[
     dsl.host.Host,
     dsl.subnet.Ipv4Subnet,
-    dsl.object.Object,
-    dsl.text.Text
+    dsl.object.Object
 ]
 
 
@@ -48,7 +47,7 @@ class GroupObject(Command):
     """
 
     key: Key["group-object"]
-    target: NetworkObjectTarget
+    target: str
 
 
 class RemoveGroupObject(Command):
@@ -57,7 +56,7 @@ class RemoveGroupObject(Command):
     """
 
     key: Key["no", "group-object"]
-    target: NetworkObjectTarget
+    target: str
 
 
 ModifyNetworkObject: TypeAlias = Union[
