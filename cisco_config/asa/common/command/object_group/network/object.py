@@ -6,9 +6,12 @@ from .... import dsl
 
 
 __all__ = (
+    "GroupObject",
+    "ModifyGroupObject",
     "ModifyNetworkObject",
     "NetworkObject",
     "NetworkObjectTarget",
+    "RemoveGroupObject",
     "RemoveNetworkObject"
 )
 
@@ -38,7 +41,27 @@ class RemoveNetworkObject(Command):
     target: NetworkObjectTarget
 
 
+class GroupObject(Command):
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/A-H/asa-command-ref-A-H/m_g-h.html#wp7992554470
+    """
+
+    key: Key["group-object"]
+    name: str
+
+
+class RemoveGroupObject(Command):
+    """
+    See: https://www.cisco.com/c/en/us/td/docs/security/asa/asa-cli-reference/A-H/asa-command-ref-A-H/m_g-h.html#wp7992554470
+    """
+
+    key: Key["no", "group-object"]
+    name: str
+
+
 ModifyNetworkObject: TypeAlias = Union[
+    GroupObject,
     NetworkObject,
+    RemoveGroupObject,
     RemoveNetworkObject
 ]
