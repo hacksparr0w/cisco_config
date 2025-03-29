@@ -47,7 +47,7 @@ class GroupObject(Command):
     """
 
     key: Key["group-object"]
-    target: str
+    name: str
 
 
 class RemoveGroupObject(Command):
@@ -56,7 +56,7 @@ class RemoveGroupObject(Command):
     """
 
     key: Key["no", "group-object"]
-    target: str
+    name: str
 
 
 ModifyNetworkObject: TypeAlias = Union[
