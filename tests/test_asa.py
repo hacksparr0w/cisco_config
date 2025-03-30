@@ -491,6 +491,11 @@ from cisco_config.asa.common import command, dsl
                         command.object_group.network.object.GroupObject(
                             name="GRP01"
                         )
+                    ],
+                    description=[
+                        command.interface.description.Description(
+                            value=dsl.text.Text(content="SNMP monitoring group")
+                        )
                     ]
                 ),
                 command.object_group.service.ServiceObjectGroup(
