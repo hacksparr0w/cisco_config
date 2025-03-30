@@ -1,4 +1,5 @@
 from ......command import Command, Key, Subcommand
+from ... import description
 from . import object
 
 
@@ -17,3 +18,4 @@ class NetworkObjectGroup(Command):
     key: Key["object-group", "network"]
     name: str
     children: Subcommand[object.ModifyNetworkObject]
+    description: Subcommand[description.ModifyDescription]
