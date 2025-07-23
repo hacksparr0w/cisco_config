@@ -38,8 +38,8 @@ class Neq(BaseModel):
 
 class Range(BaseModel):
     key: Key["range"]
-    start: int
-    stop: int
+    start: Union[int, str]
+    stop: Union[int, str]
 
 
 Op: TypeAlias = Union[Eq, Gt, Lt, Neq, Range]
