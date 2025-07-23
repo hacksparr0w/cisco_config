@@ -2,6 +2,7 @@ from typing import Optional, Literal, Union
 from typing_extensions import TypeAlias
 
 from ......command import Command, Key, Subcommand
+from ... import description
 from . import object
 
 
@@ -26,3 +27,4 @@ class ServiceObjectGroup(Command):
     name: str
     protocol: Optional[Literal["tcp", "udp", "tcp-udp"]] = None
     children: Subcommand[ServiceObjectGroupChild]
+    description: Subcommand[description.ModifyDescription]

@@ -11,7 +11,27 @@ __all__ = (
 
 
 IcmpType: TypeAlias = Union[
-    Literal["echo", "echo-reply"],
+    Literal[
+        "alternate-address",
+        "conversion-error",
+        "echo",
+        "echo-reply",
+        "information-reply",
+        "information-request",
+        "mask-reply",
+        "mask-request",
+        "mobile-redirect",
+        "parameter-problem",
+        "redirect",
+        "router-advertisement",
+        "router-solicitation",
+        "source-quench",
+        "time-exceeded",
+        "timestamp-reply",
+        "timestamp-request",
+        "traceroute",
+        "unreachable"
+    ],
     int
 ]
 

@@ -390,6 +390,23 @@ from cisco_config.asa.common import command, dsl
                         )
                     ]
                 ),
+                command.object.service.ServiceObject(
+                    name="SRV01",
+                    target=[
+                        command.object.service.service.Service(
+                            spec=command.object.service.service.L4ServiceSpec(
+                                protocol="tcp",
+                                destination=(
+                                    "destination",
+                                    dsl.op.Range(
+                                        start="www",
+                                        stop="https"
+                                    )
+                                )
+                            )
+                        )
+                    ]
+                ),
                 command.object_group.network.NetworkObjectGroup(
                     name="VPN_Test2",
                     children=[
