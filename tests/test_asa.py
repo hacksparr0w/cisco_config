@@ -719,6 +719,4 @@ def test(
         pairs = zip(expected_commands, loaded_commands)
 
         for expected_command, loaded_command in pairs:
-            if isinstance(loaded_command, command.access_group.AccessGroupGlobal):
-                breakpoint()
             assert expected_command == loaded_command
