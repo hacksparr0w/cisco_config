@@ -695,7 +695,11 @@ from cisco_config.asa.common import command, dsl
                         name="VPN_Shared_Infra"
                     )
                 ),
-                command.pager.PagerLines(value=23)
+                command.pager.PagerLines(value=23),
+                command.access_group.AccessGroupGlobal(
+                    name="GLBACL_IN",
+                    type="global"
+                )
             ]
         ),
     ]
@@ -715,4 +719,6 @@ def test(
         pairs = zip(expected_commands, loaded_commands)
 
         for expected_command, loaded_command in pairs:
+            if isinstance(loaded_command, command.access_group.AccessGroupGlobal):
+                breakpoint()
             assert expected_command == loaded_command

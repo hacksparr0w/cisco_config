@@ -19,5 +19,6 @@ hints = (
     command.object.Object,
     command.object_group.ObjectGroup,
     command.pager.PagerLines,
-    command.password.EnablePassword
+    command.password.EnablePassword,
+    command.access_group.AccessGroupGlobal
 )
