@@ -593,6 +593,9 @@ from cisco_config.asa.common import command, dsl
                     name="GRP_SVC03",
                     protocol="tcp-udp",
                     children=[
+                        command.object_group.service.object.GroupObject(
+                            name="GRP_SVC02"
+                        ),
                         command.object_group.service.object.PortObject(
                             target=dsl.op.Eq(value="22")
                         ),
