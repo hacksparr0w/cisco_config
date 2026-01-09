@@ -607,6 +607,25 @@ from cisco_config.asa.common import command, dsl
                         )
                     ]
                 ),
+                command.object_group.icmp_type.IcmpObjectGroup(
+                    name="ICMP_GRP01",
+                    children=[
+                        command.object_group.icmp_type.object.IcmpObject(
+                            name="echo"
+                        )
+                    ]
+                ),
+                command.object_group.icmp_type.IcmpObjectGroup(
+                    name="ICMP_GRP02",
+                    children=[
+                        command.object_group.icmp_type.object.GroupObject(
+                            name="ICMP_GRP01"
+                        ),
+                        command.object_group.icmp_type.object.IcmpObject(
+                            name="unreachable"
+                        )
+                    ]
+                ),
                 command.access_list.extended.PortbasedExtendedAccessList(
                     name="GLBACL_IN",
                     action="permit",

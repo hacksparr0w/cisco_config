@@ -14,6 +14,9 @@ from .command.object_group.protocol import \
 from .command.object_group.service import \
     ServiceObjectGroup as ServiceObjectGroupCommand
 
+from .command.object_group.icmp_type import \
+    IcmpObjectGroup as IcmpObjectGroupCommand
+
 from .entity import (
     Object,
     ObjectGroup,
@@ -102,6 +105,12 @@ class SimpleEntityRegistry(EntityRegistry):
         elif isinstance(command, ServiceObjectGroupCommand):
             return ObjectGroup(
                 type=ObjectGroupType.SERVICE,
+                name=command.name
+            )
+
+        elif isinstance(command, IcmpObjectGroupCommand):
+            return ObjectGroup(
+                type=ObjectGroupType.ICMP,
                 name=command.name
             )
 
