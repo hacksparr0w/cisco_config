@@ -26,7 +26,7 @@ class L4ServiceSpec(BaseModel):
 
 class IcmpServiceSpec(BaseModel):
     protocol: Union[Literal["icmp"], Literal["icmp6"]]
-    options: IcmpOptions
+    options: Optional[IcmpOptions]
 
 
 ServiceSpec: TypeAlias = Union[
