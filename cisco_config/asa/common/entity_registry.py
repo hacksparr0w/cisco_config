@@ -14,6 +14,9 @@ from .command.object_group.protocol import \
 from .command.object_group.service import \
     ServiceObjectGroup as ServiceObjectGroupCommand
 
+from .command.object_group.icmp_type import \
+    IcmpObjectGroup as IcmpObjectGroupCommand
+
 from .entity import (
     Object,
     ObjectGroup,
@@ -35,7 +38,9 @@ class DuplicateEntityError(Exception):
 
 
 class EntityNotFoundError(Exception):
-    pass
+    def __init__(self, name):
+        super().__init__(f"Entity '{name}' not found in the configuration.")
+        self.name = name
 
 
 class EntityRegistry(ABC):
@@ -105,6 +110,12 @@ class SimpleEntityRegistry(EntityRegistry):
                 name=command.name
             )
 
+        elif isinstance(command, IcmpObjectGroupCommand):
+            return ObjectGroup(
+                type=ObjectGroupType.ICMP,
+                name=command.name
+            )
+
         else:
             raise TypeError
 
@@ -112,13 +123,13 @@ class SimpleEntityRegistry(EntityRegistry):
         try:
             return self._objects[name]
         except KeyError as error:
-            raise EntityNotFoundError from error
+            raise EntityNotFoundError(name) from error
 
     def get_object_group(self, name: str) -> ObjectGroup:
         try:
             return self._object_groups[name]
         except KeyError as error:
-            raise EntityNotFoundError from error
+            raise EntityNotFoundError(name) from error
 
     def register_object(self, command: ObjectCommand) -> Object:
         object = self.create_object(command)
@@ -141,10 +152,10 @@ class SimpleEntityRegistry(EntityRegistry):
         try:
             return self._objects.pop(name)
         except KeyError as error:
-            raise EntityNotFoundError from error
+            raise EntityNotFoundError(name) from error
 
     def delete_object_group(self, name: str) -> ObjectGroup:
         try:
             return self._object_groups.pop(name)
         except KeyError as error:
-            raise EntityNotFoundError from error
+            raise EntityNotFoundError(name) from error

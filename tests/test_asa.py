@@ -593,6 +593,9 @@ from cisco_config.asa.common import command, dsl
                     name="GRP_SVC03",
                     protocol="tcp-udp",
                     children=[
+                        command.object_group.service.object.GroupObject(
+                            name="GRP_SVC02"
+                        ),
                         command.object_group.service.object.PortObject(
                             target=dsl.op.Eq(value="22")
                         ),
@@ -601,6 +604,25 @@ from cisco_config.asa.common import command, dsl
                                 start=1024,
                                 stop=65535
                             )
+                        )
+                    ]
+                ),
+                command.object_group.icmp_type.IcmpObjectGroup(
+                    name="ICMP_GRP01",
+                    children=[
+                        command.object_group.icmp_type.object.IcmpObject(
+                            name="echo"
+                        )
+                    ]
+                ),
+                command.object_group.icmp_type.IcmpObjectGroup(
+                    name="ICMP_GRP02",
+                    children=[
+                        command.object_group.icmp_type.object.GroupObject(
+                            name="ICMP_GRP01"
+                        ),
+                        command.object_group.icmp_type.object.IcmpObject(
+                            name="unreachable"
                         )
                     ]
                 ),
@@ -695,7 +717,11 @@ from cisco_config.asa.common import command, dsl
                         name="VPN_Shared_Infra"
                     )
                 ),
-                command.pager.PagerLines(value=23)
+                command.pager.PagerLines(value=23),
+                command.access_group.AccessGroupGlobal(
+                    name="GLBACL_IN",
+                    type="global"
+                )
             ]
         ),
     ]

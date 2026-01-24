@@ -4,6 +4,7 @@ from typing_extensions import TypeAlias
 from . import (
     network,
     protocol,
+    icmp_type,
     search,
     service
 )
@@ -12,6 +13,7 @@ from . import (
 __all__ = (
     "network",
     "protocol",
+    "icmp_type",
     "search",
     "service",
     "ObjectGroup"
@@ -21,5 +23,6 @@ __all__ = (
 ObjectGroup: TypeAlias = Union[
     network.NetworkObjectGroup,
     protocol.ProtocolObjectGroup,
-    service.ServiceObjectGroup
+    service.ServiceObjectGroup,
+    icmp_type.IcmpObjectGroup
 ]

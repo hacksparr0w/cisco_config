@@ -28,7 +28,7 @@ AccessListIcmpOptions: TypeAlias = Union[
         dsl.object_group.ObjectGroup,
         AfterValidator(
             validate_object_group_types(
-                ObjectGroupType.SERVICE
+                ObjectGroupType.ICMP
             )
         )
     ]
